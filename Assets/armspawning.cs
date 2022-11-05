@@ -7,17 +7,18 @@ public class armspawning : MonoBehaviour
     public GameObject armPrefab;
 
     private Collider2D[] colliders;
-    private float radius = 100f;
+    //private float radius = 100f;
 
     public List<Vector3> startPositions = new List<Vector3>();
 
     public List<Vector3> armPositions = new List<Vector3>();
 
-    public float ARM_RADIUS = 1f;
-    private float wait = 0f; 
+    //public float ARM_RADIUS = 1f;
+    //private float wait = 0f; 
 
     private LineRenderer lineRenderer;
 
+    /*
 
     private void Awake () {
         lineRenderer = GetComponent<LineRenderer>();
@@ -207,4 +208,6 @@ public class armspawning : MonoBehaviour
         }
         return true;
     }
+
+    */
 }
