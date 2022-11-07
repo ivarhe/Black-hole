@@ -54,6 +54,22 @@ public class PlayerController : MonoBehaviour
         {
             currentlyGrabbedObject.position = holdpoint.position + Vector3.right * 0.18f;
         }
+
+         if(transform.position.y >= 25) {
+            transform.position = new Vector3(transform.position.x, 25, 0);
+        }
+        else if (transform.position.y <= -25) {
+            transform.position = new Vector3(transform.position.x, -25,0);
+        }
+
+        if (transform.position.x >= 45) {
+            transform.position = new Vector3(45, transform.position.y, 0);
+        }
+        else if (transform.position.x <= -45) {
+            transform.position = new Vector3(-45, transform.position.y,0);
+        }
+
+        
     }
     
     private void FixedUpdate() { 
@@ -75,4 +91,6 @@ public class PlayerController : MonoBehaviour
     {
         movementInput = movementValue.Get<Vector2>();
     }
+
+
 }
