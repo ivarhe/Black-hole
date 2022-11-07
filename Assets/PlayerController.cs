@@ -35,7 +35,7 @@ public class PlayerController : MonoBehaviour
             Debug.Log(pos);
             if (!currentlyGrabbedObject)
             {
-                Collider2D hit = Physics2D.OverlapCircle(pos, 1.5f, CollidableObjects);
+                Collider2D hit = Physics2D.OverlapCircle(pos, 2f, CollidableObjects);
                 Debug.Log("heihei: " + hit);
                 if (hit)
                 {
