@@ -22,7 +22,7 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        rb = GetComponent<Rigidbody2D>(); 
+        rb = GetComponent<Rigidbody2D>();
     }
 
     // Update is called once per frame
@@ -34,20 +34,21 @@ public class PlayerController : MonoBehaviour
             Vector2 pos = GameObject.Find("Player").transform.position;
             Debug.Log(pos);
             if (!currentlyGrabbedObject)
-            {      
-                Collider2D hit = Physics2D.OverlapCircle(pos, 1f, CollidableObjects);
+            {
+                Collider2D hit = Physics2D.OverlapCircle(pos, 1.5f, CollidableObjects);
                 Debug.Log("heihei: " + hit);
                 if (hit)
                 {
+                    if (hit.GetType() == typeof(PolygonCollider2D)) { return; }
                     currentlyGrabbedObject = hit.transform;
                     Debug.Log("Hit! ");
-                }     
+                }
             }
             else // release currently grabbed object
             {
                 currentlyGrabbedObject = null;
             }
-                         
+
         }
 
         if (currentlyGrabbedObject)
@@ -71,9 +72,11 @@ public class PlayerController : MonoBehaviour
 
         
     }
-    
-    private void FixedUpdate() { 
-        if (movementInput != Vector2.zero) {
+
+    private void FixedUpdate()
+    {
+        if (movementInput != Vector2.zero)
+        {
             int count = rb.Cast(
                 movementInput,
                 movementFilter,
@@ -81,13 +84,14 @@ public class PlayerController : MonoBehaviour
                 moveSpeed * Time.fixedDeltaTime + collisionOffset
             );
 
-            if (count == 0) {
+            if (count == 0)
+            {
                 rb.MovePosition(rb.position + movementInput * moveSpeed * Time.fixedDeltaTime);
             }
         }
     }
 
-    void OnMove(InputValue movementValue) 
+    void OnMove(InputValue movementValue)
     {
         movementInput = movementValue.Get<Vector2>();
     }

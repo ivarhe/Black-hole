@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class armspawning : MonoBehaviour
 {
-    public GameObject armPrefab;
+    public GameObject Square;
 
     private Collider2D[] colliders;
     //private float radius = 100f;
@@ -17,6 +17,13 @@ public class armspawning : MonoBehaviour
     //private float wait = 0f; 
 
     private LineRenderer lineRenderer;
+
+    void Start()
+    {
+        Instantiate(Square, new Vector3(-10, 0, 0), Quaternion.identity);
+        Instantiate(Square, new Vector3(-10, 10, 0), Quaternion.identity);
+        Instantiate(Square, new Vector3(-10, -10, 0), Quaternion.identity);
+    }
 
     /*
 
