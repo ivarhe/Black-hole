@@ -2,17 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class bSpawner : MonoBehaviour
+public class ballSpawner : MonoBehaviour
 {
-    // Start is called before the first frame update
+    public GameObject ballPrefab;
 
-    public GameObject bPrefab;
-    private Vector2 pos;
+     private Vector2 pos;
+
     [SerializeField] private float threshold = 5;
-
     private float _timeAccumulated;
 
     public bool CanPlaceObj => _timeAccumulated > threshold;
+    // Start is called before the first frame update
     void Start()
     {
         SpawnObj();
@@ -30,12 +30,8 @@ public class bSpawner : MonoBehaviour
 
 
     private void SpawnObj(){
-        pos = new Vector2(Random.Range(-45, -20), Random.Range(14,25));
-        GameObject obj = Instantiate(bPrefab,pos,Quaternion.identity);
+        pos = new Vector2(Random.Range(-45, 45), Random.Range(-25,25));
+        GameObject obj = Instantiate(ballPrefab,pos,Quaternion.identity);
         obj.transform.parent = transform;
     }
-
-    // Update is called once per frame
-
-
 }
