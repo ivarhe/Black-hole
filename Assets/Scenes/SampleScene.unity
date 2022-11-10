@@ -222,7 +222,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 29.831062
+  orthographic size: 35.083332
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -285,12 +285,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 519420028}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6ac638e76002948e68ddf20aff17c86e, type: 3}
+  m_Script: {fileID: 11500000, guid: e608b24682d774399bbb9fd00e90c9a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Square: {fileID: 113033510}
-  startPositions: []
-  armPositions: []
+  aPrefab: {fileID: 6822412457978465839, guid: 1be46ef3821186e4bbb1039092c49df9, type: 3}
+  bPrefab: {fileID: 3411206777164206896, guid: 961963c27c7ac8e4f8beedba9cc4bbd0, type: 3}
+  hand: {fileID: 962963877}
+  Bklys: {fileID: 5306216142724359806, guid: 3a1b51192066f4b62b1e0229dee04395, type: 3}
+  threshold: 5
+  maxAmount: 10
+  CollidableObjects:
+    serializedVersion: 2
+    m_Bits: 1024
+  holdpoint: {fileID: 175575776}
 --- !u!1 &619394800
 GameObject:
   m_ObjectHideFlags: 0
@@ -516,7 +523,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c8fbd123fcc74c7b9e14f2c96a8b8cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  strength: 0
 --- !u!1 &1991008731
 GameObject:
   m_ObjectHideFlags: 0
@@ -856,7 +862,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8437203129302570740, guid: 04ec3979e05f648109b11d4ffeee965e, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -20
       objectReference: {fileID: 0}
     - target: {fileID: 8437203129302570740, guid: 04ec3979e05f648109b11d4ffeee965e, type: 3}
       propertyPath: m_LocalPosition.y
