@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3663064981118128949}
   - component: {fileID: 6650943013335052234}
   m_Layer: 10
-  m_Name: Arm
+  m_Name: arm
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -74,10 +74,7 @@ LineRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Positions:
-  - {x: 0, y: 0, z: 0}
-  - {x: 10, y: 0, z: 0}
-  - {x: 10, y: 10, z: 0}
-  - {x: 20, y: 10, z: 0}
+  - {x: 5, y: 0, z: 0}
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 1
