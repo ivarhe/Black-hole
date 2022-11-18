@@ -22,18 +22,18 @@ class ToyObject : IToyObject
 public class GameController : MonoBehaviour
 {
 
-    //public float ARM_RADIUS = 1f;
-    //private float wait = 0f; 
+    public GameObject aBlockPrefab, bBlockPrefab, ballPrefab, carPrefab, boxPrefab, hand, player;
 
-    public GameObject aPrefab, bPrefab, hand, player;
+    public Sprite aBlockSprite, bBlockSprite, ballSprite, carSprite, boxSprite;
+    public Sprite aBlockSpriteShine, bBlockSpriteShine, ballSpriteShine, carSpriteShine, boxSpriteShine;
 
-    public Sprite aBlockSprite, bBlockSprite, aBlockSpriteShine, bBlockSpriteShine;
+    private IToyObject[] spawnableObjects = new IToyObject[5];
+    private List<IToyObject> spawnedObjects = new List<IToyObject>();
     private Vector3 pos;
 
     [SerializeField] private float threshold = 2;
     private float _timeAccumulated;
     public float maxAmount = 10;
-    private List<IToyObject> objects = new List<IToyObject>();
 
     public bool CanPlaceObj => _timeAccumulated > threshold && !Physics2D.OverlapCircle(pos, 0.5f) && transform.childCount < maxAmount;
 
@@ -42,18 +42,19 @@ public class GameController : MonoBehaviour
 
     private Transform currentlyGrabbedObject;
     public LayerMask CollidableObjects;
+    public LayerMask ToyObjects;
 
     public Transform holdpoint;
 
     void Update()
     {
-        for (int i = 0; i < objects.Count; i++)
+        for (int i = 0; i < spawnedObjects.Count; i++)
         {
-            makeShine(objects[i]);
+            makeShine(spawnedObjects[i]);
         }
         if (CanPlaceObj)
         {
-            SpawnObj(aPrefab, 3);
+            SpawnObj();
             _timeAccumulated = 0;
             return;
         }
@@ -66,7 +67,7 @@ public class GameController : MonoBehaviour
             Debug.Log(pos);
             if (!currentlyGrabbedObject)
             {
-                Collider2D hit = Physics2D.OverlapCircle(pos, 2f, CollidableObjects);
+                Collider2D hit = Physics2D.OverlapCircle(pos, 2f, ToyObjects);
                 Debug.Log("heihei: " + hit);
                 if (hit)
                 {
@@ -87,28 +88,10 @@ public class GameController : MonoBehaviour
         {
             currentlyGrabbedObject.position = holdpoint.position + Vector3.right * 0.18f;
         }
-
-        if (transform.position.y >= 25)
-        {
-            transform.position = new Vector3(transform.position.x, 25, 0);
-        }
-        else if (transform.position.y <= -25)
-        {
-            transform.position = new Vector3(transform.position.x, -25, 0);
-        }
-
-        if (transform.position.x >= 45)
-        {
-            transform.position = new Vector3(45, transform.position.y, 0);
-        }
-        else if (transform.position.x <= -45)
-        {
-            transform.position = new Vector3(-45, transform.position.y, 0);
-        }
     }
 
 // TODO: Add the rest of the objects here
-    private void makeShine(IToyObject obj)
+    void makeShine(IToyObject obj)
     {
         if ((player.transform.position - obj.gameObject.transform.position).sqrMagnitude < 3 * 20) // check if the player is close to the object
         {
@@ -120,6 +103,22 @@ public class GameController : MonoBehaviour
             if (obj.gameObject.CompareTag("b-block"))
             {
                 obj.gameObject.GetComponent<SpriteRenderer>().sprite = bBlockSpriteShine;
+                return;
+            }
+            if (obj.gameObject.CompareTag("ball"))
+            {
+                obj.gameObject.GetComponent<SpriteRenderer>().sprite = ballSpriteShine;
+                return;
+            }
+            if (obj.gameObject.CompareTag("car"))
+            {
+                obj.gameObject.GetComponent<SpriteRenderer>().sprite = carSpriteShine;
+                return;
+            }
+            if (obj.gameObject.CompareTag("box"))
+            {
+                obj.gameObject.GetComponent<SpriteRenderer>().sprite = boxSpriteShine;
+                return;
             }
         }
         else
@@ -132,6 +131,22 @@ public class GameController : MonoBehaviour
             if (obj.gameObject.CompareTag("b-block"))
             {
                 obj.gameObject.GetComponent<SpriteRenderer>().sprite = bBlockSprite;
+                return;
+            }
+            if (obj.gameObject.CompareTag("ball"))
+            {
+                obj.gameObject.GetComponent<SpriteRenderer>().sprite = ballSprite;
+                return;
+            }
+            if (obj.gameObject.CompareTag("car"))
+            {
+                obj.gameObject.GetComponent<SpriteRenderer>().sprite = carSprite;
+                return;
+            }
+            if (obj.gameObject.CompareTag("box"))
+            {
+                obj.gameObject.GetComponent<SpriteRenderer>().sprite = boxSprite;
+                return;
             }
         }
     }
@@ -149,44 +164,50 @@ public class GameController : MonoBehaviour
 
     void OnHit()
     {
-        for (int i = 0; i < objects.Count; i++)
-        {
-            if ((hand.transform.position - objects[i].gameObject.transform.position).sqrMagnitude < 3 * 3)
-            {
-                Debug.Log("RETT I NEBBET! ");
-                if (objects[i].strength > 0)
-                {
-                    objects[i].strength--;
-                }
-                else
-                {
-                    Debug.Log("Destroy");
-                    Destroy(objects[i].gameObject);
-                    objects.RemoveAt(i);
-                    onBreak();
-                }
+        GameObject closestToy = GetClosestToy();
+        closestToy.GetComponent<Rigidbody2D>().AddForce((closestToy.transform.position - hand.transform.position) * 50, ForceMode2D.Impulse);
+        closestToy.GetComponent<Rigidbody2D>().drag = 1;
+        onBreak();
+    }
+
+    GameObject GetClosestToy()
+    {
+        GameObject bestTarget = null;
+        float closestDistanceSqr = Mathf.Infinity;
+        Vector3 currentPosition = hand.transform.position;
+        for (int i = 0; i < spawnedObjects.Count; i++) {
+            Vector3 directionToTarget = spawnedObjects[i].gameObject.transform.position - currentPosition;
+            float dSqrToTarget = directionToTarget.sqrMagnitude;
+            if (dSqrToTarget < closestDistanceSqr) {
+                closestDistanceSqr = dSqrToTarget;
+                bestTarget = spawnedObjects[i].gameObject;
             }
         }
-        onBreak(); // Bug because it tries to move into itself, so we call onbreak anyway
-
+        return bestTarget;
     }
 
     // Start is called before the first frame update
     void Start()
     {
+        spawnableObjects[0] = new ToyObject(aBlockPrefab, 5);
+        spawnableObjects[1] = new ToyObject(bBlockPrefab, 8);
+        spawnableObjects[2] = new ToyObject(ballPrefab, 3);
+        spawnableObjects[3] = new ToyObject(carPrefab, 10);
+        //spawnableObjects[4] = new ToyObject(boxPrefab, 15);
         hand = GameObject.Find("hand");
-        SpawnObj(aPrefab, 5);
+        SpawnObj();
 
     }
 
 
-    private void SpawnObj(GameObject prefab, float strength)
+    private void SpawnObj()
     {
+        int whichItem = Random.Range (0, spawnableObjects.Length - 2); // change to -1 when box if fixed
         Debug.Log("SpawnObj");
         pos = new Vector3(Random.Range(-45, 45), Random.Range(-25, 25), 0);
-        GameObject obj = Instantiate(prefab, pos, Quaternion.identity);
+        GameObject obj = Instantiate(spawnableObjects[whichItem].gameObject, pos, Quaternion.identity);
         obj.transform.parent = transform;
-        objects.Add(new ToyObject(obj, strength));
+        spawnedObjects.Add(new ToyObject(obj, spawnableObjects[whichItem].strength));
     }
 
 
