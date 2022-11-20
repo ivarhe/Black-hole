@@ -7,6 +7,10 @@ TagManager:
   - Objects
   - a-block
   - b-block
+  - ball
+  - car
+  - box
+  - hand
   layers:
   - Default
   - TransparentFX
@@ -19,7 +23,7 @@ TagManager:
   - 
   - 
   - CollidableObjects
-  - 
+  - Toys
   - 
   - 
   - 

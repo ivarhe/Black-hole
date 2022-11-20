@@ -18,6 +18,7 @@ public class PlayerController : MonoBehaviour
     public float distance = 0f;
     public Transform holdpoint;
     public LayerMask CollidableObjects;
+    public LayerMask ToyObjects;
 
     private Transform currentlyGrabbedObject;
 
@@ -36,16 +37,13 @@ public class PlayerController : MonoBehaviour
         {
             Debug.Log("spacebar_down: ");
             Vector2 pos = GameObject.Find("Player").transform.position;
-            Debug.Log(pos);
             if (!currentlyGrabbedObject)
             {
-                Collider2D hit = Physics2D.OverlapCircle(pos, 2f, CollidableObjects);
-                Debug.Log("heihei: " + hit);
+                Collider2D hit = Physics2D.OverlapCircle(pos, 2f, ToyObjects);
                 if (hit)
                 {
                     if (hit.GetType() == typeof(PolygonCollider2D)) { return; }
                     currentlyGrabbedObject = hit.transform;
-                    Debug.Log("Hit! ");
                 }
             }
             else // Release currently grabbed object
@@ -60,18 +58,18 @@ public class PlayerController : MonoBehaviour
             currentlyGrabbedObject.position = holdpoint.position + Vector3.right * 0.18f;
         }
 
-         if(transform.position.y >= 25) {
-            transform.position = new Vector3(transform.position.x, 25, 0);
+         if(transform.position.y >= 40) {
+            transform.position = new Vector3(transform.position.x, 40, 0);
         }
-        else if (transform.position.y <= -25) {
-            transform.position = new Vector3(transform.position.x, -25,0);
+        else if (transform.position.y <= -40) {
+            transform.position = new Vector3(transform.position.x, -40,0);
         }
 
-        if (transform.position.x >= 45) {
-            transform.position = new Vector3(45, transform.position.y, 0);
+        if (transform.position.x >= 65) {
+            transform.position = new Vector3(65, transform.position.y, 0);
         }
-        else if (transform.position.x <= -45) {
-            transform.position = new Vector3(-45, transform.position.y,0);
+        else if (transform.position.x <= -65) {
+            transform.position = new Vector3(-65, transform.position.y,0);
         }
 
         
