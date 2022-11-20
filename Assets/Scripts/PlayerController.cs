@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -20,12 +21,36 @@ public class PlayerController : MonoBehaviour
 
     private Transform currentlyGrabbedObject;
 
+    public List<GameObject> hearts;
+
+
+
+
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
     }
 
+    void OnEnable()
+    {
+        ToyController.collision += ToyCollide;
+    }
+
+    void OnDisable()
+    {
+        ToyController.collision += ToyCollide;
+    }
+
+
+    void ToyCollide(GameObject toy)
+    {
+        Debug.Log("Toy: " + toy);
+        if (currentlyGrabbedObject == toy.transform)
+        {
+            currentlyGrabbedObject = null;
+        }
+    }
     // Update is called once per frame
     void Update()
     {
@@ -51,25 +76,39 @@ public class PlayerController : MonoBehaviour
 
         if (currentlyGrabbedObject)
         {
+            Debug.Log("grabbed: " + currentlyGrabbedObject.name);
             currentlyGrabbedObject.position = holdpoint.position + Vector3.right * 0.18f;
+
         }
 
-         if(transform.position.y >= 40) {
-            transform.position = new Vector3(transform.position.x, 40, 0);
-        }
-        else if (transform.position.y <= -40) {
-            transform.position = new Vector3(transform.position.x, -40,0);
-        }
-
-        if (transform.position.x >= 65) {
-            transform.position = new Vector3(65, transform.position.y, 0);
-        }
-        else if (transform.position.x <= -65) {
-            transform.position = new Vector3(-65, transform.position.y,0);
-        }
-
-        
     }
+
+    private void OnCollisionEnter2D(Collision2D col)
+    {
+        Debug.Log("collide with player " + col.gameObject.name);
+        if (col.gameObject.tag == "arm" || col.gameObject.tag == "hand")
+        {
+            // get the direction of the collision
+            Vector2 direction = col.contacts[0].point - (Vector2)transform.position;
+            direction = -direction.normalized;
+            // move the player away from the collision
+            transform.position = (Vector2)transform.position + direction * collisionOffset * 100;
+
+            if (hearts.Count > 0)
+            {
+                GameObject heart = hearts[hearts.Count - 1];
+                hearts.Remove(heart);
+                Destroy(heart);
+            }
+            else
+            {
+                SceneManager.LoadScene("GameOver");
+            }
+            rb.MovePosition(rb.position - movementInput * moveSpeed * 20 * Time.fixedDeltaTime);
+        }
+    }
+
+
 
     private void FixedUpdate()
     {

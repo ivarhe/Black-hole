@@ -11,6 +11,7 @@ TagManager:
   - car
   - box
   - hand
+  - arm
   layers:
   - Default
   - TransparentFX
