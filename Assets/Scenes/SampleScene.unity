@@ -123,7 +123,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
-<<<<<<< HEAD
 --- !u!1 &155698589
 GameObject:
   m_ObjectHideFlags: 0
@@ -192,8 +191,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-=======
->>>>>>> 53d463c (merge)
 --- !u!4 &175575776 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 9134509428367669426, guid: be3356472068742f99a6fd3346b25740, type: 3}
@@ -384,7 +381,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 2048
   holdpoint: {fileID: 175575776}
-<<<<<<< HEAD
 --- !u!1 &602185620
 GameObject:
   m_ObjectHideFlags: 0
@@ -520,8 +516,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 602185620}
   m_CullTransparentMesh: 1
-=======
->>>>>>> 53d463c (merge)
 --- !u!1 &619394800
 GameObject:
   m_ObjectHideFlags: 0
@@ -838,7 +832,6 @@ MonoBehaviour:
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2856258050623005040, guid: be3356472068742f99a6fd3346b25740, type: 3}
   m_PrefabInstance: {fileID: 755286888}
-<<<<<<< HEAD
   m_PrefabAsset: {fileID: 0}
 --- !u!114 &994641855
 MonoBehaviour:
@@ -1249,9 +1242,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1962905237}
   m_CullTransparentMesh: 1
-=======
-  m_PrefabAsset: {fileID: 0}
->>>>>>> 53d463c (merge)
 --- !u!1 &1991008731
 GameObject:
   m_ObjectHideFlags: 0
