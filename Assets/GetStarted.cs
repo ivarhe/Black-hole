@@ -15,14 +15,11 @@ public class GetStarted : MonoBehaviour
         scoreStarter.scoreCount = 0;
         scoreStarter.ScoreIncreasing = true;
 
-
-
     }
 
     public void Update() {
         if(life.dead == true){
             scoreStarter.ScoreIncreasing = false;
-
         }
     }
 

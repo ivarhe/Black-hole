@@ -11,7 +11,7 @@ public class Score : MonoBehaviour
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI highScoreText;
     public float scoreCount;
-    public float highScoreCount;
+    public static float highScoreCount;
 
     public float pointsPerSecond;
 
@@ -19,7 +19,9 @@ public class Score : MonoBehaviour
     // Update is called once per frame
 
     void Start() {
-        
+        if(PlayerPrefs.GetFloat("HighScore") != null) {
+            highScoreCount = PlayerPrefs.GetFloat("HighScore");
+        }
     }
     void Update()
     {
@@ -31,6 +33,7 @@ public class Score : MonoBehaviour
 
         if (scoreCount > highScoreCount) {
             highScoreCount = scoreCount;
+            PlayerPrefs.SetFloat("HighScore",highScoreCount);
         }
         highScoreText.text = "Highscore " + Mathf.Round(highScoreCount);
         Debug.Log("highscore: " + highScoreCount);
