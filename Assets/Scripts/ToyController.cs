@@ -14,6 +14,11 @@ public class ToyController : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D col)
     {
+        if (col.gameObject.tag == "player")
+        {
+            //set kinematic to false
+            GetComponent<Rigidbody2D>().isKinematic = true;
+        }
         if (col.gameObject.tag == "arm")
         {
             Debug.Log("collide");
@@ -29,6 +34,16 @@ public class ToyController : MonoBehaviour
             {
                 handCollision(gameObject);
             }
+        }
+    }
+
+    // cancel collision when the player leaves the toy
+    private void OnCollisionExit2D(Collision2D col)
+    {
+        if (col.gameObject.tag == "player")
+        {
+            //set kinematic to false
+            GetComponent<Rigidbody2D>().isKinematic = false;
         }
     }
 
