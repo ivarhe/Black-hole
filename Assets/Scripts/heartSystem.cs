@@ -9,7 +9,7 @@ public class heartSystem : MonoBehaviour
 
     public GameObject[] hearts;
     public int life;
-    private bool dead;
+    public bool dead;
 
     public static event Action onPlayerDeath;
 
