@@ -31,7 +31,7 @@ public class TrailCollider : MonoBehaviour
             GameObject colliderObject = new GameObject("TrailCollider", typeof(EdgeCollider2D));
             validCollider = colliderObject.GetComponent<EdgeCollider2D>();
         }
-        validCollider.tag = "hand";
+        validCollider.tag = "trail";
         return validCollider;
 
     }
@@ -56,7 +56,8 @@ public class TrailCollider : MonoBehaviour
     {
         if (edgeCollider != null)
         {
-            Destroy(edgeCollider.gameObject);
+            unusedColliders.Add(edgeCollider);
+            edgeCollider.enabled = false;
         }
     }
    

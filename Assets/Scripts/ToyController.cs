@@ -23,7 +23,6 @@ public class ToyController : MonoBehaviour
         // check if the toy is colliding with the bed
         if (col.gameObject.tag == "bed")
         {
-            Debug.Log("collide");
             if (collision != null)
             {
                 collision(gameObject);
@@ -34,13 +33,15 @@ public class ToyController : MonoBehaviour
             Debug.Log("collide with hand");
             if (handCollision != null)
             {
-                handCollision(gameObject);
+                handCollision(col.gameObject);
             }
+        }
+        if (col.gameObject.tag == "trail")
+        {
             if (collision != null)
             {
                 collision(gameObject);
             }
-            
         }
 
     }
@@ -52,6 +53,14 @@ public class ToyController : MonoBehaviour
         {
             //set kinematic to false
             //GetComponent<Rigidbody2D>().isKinematic = false;
+        }
+        if (col.gameObject.tag == "hand")
+        {
+            Debug.Log("collide with hand");
+            if (handCollision != null)
+            {
+                handCollision(col.gameObject);
+            }
         }
     }
 

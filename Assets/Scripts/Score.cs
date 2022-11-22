@@ -58,7 +58,6 @@ public class Score : MonoBehaviour
             PlayerPrefs.SetString("GameOverText", "New HighScore! You have managed to keep the monster away for the longest amount of time! But not enough, it seems...");
         }
         highScoreText.text = "HighScore: " + Mathf.Round(highScoreCount);
-        Debug.Log("highscore: " + highScoreCount);
     }
 
 }

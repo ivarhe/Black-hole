@@ -105,7 +105,7 @@ public class PlayerController : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D col)
     {
         Debug.Log("collide with player " + col.gameObject.name);
-        if (col.gameObject.tag == "hand")
+        if (col.gameObject.tag == "hand" || col.gameObject.tag == "trail")
         {
             isBouncing = true;
             Invoke("StopBounce", 0.3f);

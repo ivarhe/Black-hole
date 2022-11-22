@@ -12,6 +12,8 @@ TagManager:
   - box
   - hand
   - arm
+  - bed
+  - trail
   layers:
   - Default
   - TransparentFX

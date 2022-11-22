@@ -19,6 +19,23 @@ class ToyObject : IToyObject
     public float strength { get; set; }
 }
 
+interface IHandObject
+{
+    GameObject hand { get; set; }
+    string focus { get; set; }
+}
+
+class HandObject : IHandObject
+{
+    public HandObject(GameObject hand, string focus)
+    {
+        this.hand = hand;
+        this.focus = focus;
+    }
+    public GameObject hand { get; set; }
+    public string focus { get; set; }
+}
+
 public class GameController : MonoBehaviour
 {
 
@@ -29,6 +46,8 @@ public class GameController : MonoBehaviour
 
     private IToyObject[] spawnableObjects = new IToyObject[5];
     private List<IToyObject> spawnedObjects = new List<IToyObject>();
+
+    private List<IHandObject> hands = new List<IHandObject>();
     private Vector3 pos;
 
     private Vector3[] startPos = new Vector3[14];
@@ -141,18 +160,40 @@ public class GameController : MonoBehaviour
         StartCoroutine(WaitToMove(toy));
     }
 
-    IEnumerator WaitToMove(GameObject toy)
+    // Maybe remove parameter here!
+    IEnumerator WaitToMove(GameObject hand)
     {
         yield return new WaitForSeconds(5);
 
+        GameObject closest = getClosestToy(hand);
+
         if (move != null)
         {
-            toy.GetComponent<Rigidbody2D>().AddForce((toy.transform.position - handPrefab.transform.position) * 5, ForceMode2D.Impulse);
-            toy.GetComponent<Rigidbody2D>().drag = 1f;
+            closest.GetComponent<Rigidbody2D>().AddForce((closest.transform.position - hand.transform.position) * 5, ForceMode2D.Impulse);
+            closest.GetComponent<Rigidbody2D>().drag = 1f;
             move();
         }
-
     }
+
+    // get closest toy to the hand using spawwnedObjects list
+    public GameObject getClosestToy(GameObject hand)
+    {
+        GameObject closest = null;
+        float distance = Mathf.Infinity;
+        Vector3 position = hand.transform.position;
+        foreach (IToyObject toy in spawnedObjects)
+        {
+            Vector3 diff = toy.gameObject.transform.position - position;
+            float curDistance = diff.sqrMagnitude;
+            if (curDistance < distance)
+            {
+                closest = toy.gameObject;
+                distance = curDistance;
+            }
+        }
+        return closest;
+    }
+  
 
     // Start is called before the first frame update
     void Start()
@@ -179,10 +220,21 @@ public class GameController : MonoBehaviour
         startPos[12] = new Vector3(-2.5f, 9.5f, 0);
         startPos[13] = new Vector3(2.5f, 9.5f, 0);
 
-        GameObject arm = Instantiate(armPrefab, new Vector3(), Quaternion.identity);
+        //GameObject arm = Instantiate(armPrefab, new Vector3(), Quaternion.identity);
 
-        GameObject hand = Instantiate(handPrefab, startPos[5], Quaternion.identity);
-        arm.GetComponent<ArmController>().hand = hand;
+        GameObject tmp = Instantiate(handPrefab, startPos[5], Quaternion.identity);
+        hands.Add(new HandObject(tmp, "RIGHT"));
+        tmp.SendMessage("SetHand", "RIGHT");
+
+        GameObject tmp2 = Instantiate(handPrefab, startPos[0], Quaternion.identity);
+        hands.Add(new HandObject(tmp2, "LEFT"));
+        tmp2.SendMessage("SetHand", "LEFT");
+
+        GameObject tmp3 = Instantiate(handPrefab, startPos[1], Quaternion.identity);
+        hands.Add(new HandObject(tmp3, "PLAYER"));
+        tmp3.SendMessage("SetHand", "PLAYER");
+
+        //arm.GetComponent<ArmController>().hand = hand;
         //arm.SendMessage("SetTargetPosition", startPos[5]);
 
     }

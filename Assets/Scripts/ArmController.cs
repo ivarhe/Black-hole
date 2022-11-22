@@ -6,10 +6,10 @@ using UnityEngine;
 public class ArmController : MonoBehaviour
 {
 
-    public LineRenderer lineRenderer;
+    //public LineRenderer lineRenderer;
     public LayerMask ToyObjects;
     private List<Vector3> points;
-    private GameObject Arm;
+    //private GameObject Arm;
     public GameObject hand;
     float MOVE_VALUE = 2f;
     private int lastdirection = 1;
@@ -134,24 +134,52 @@ public class ArmController : MonoBehaviour
             yield return null;
         }
     }
+    private int[] directions;
 
-
+    void SetHand(string focus)
+    {
+        if (focus == "LEFT")
+        {
+            directions = new int[] { 0, 2, 3, 3 };
+        }
+        else if (focus == "RIGHT")
+        {
+            directions = new int[] { 0, 1, 1, 2 };
+        }
+        else if (focus == "UP")
+        {
+            directions = new int[] { 0, 0, 1, 3 };
+        }
+        else if (focus == "DOWN")
+        {
+            directions = new int[] { 1, 2, 2, 3 };
+        }
+        else if (focus == "PLAYER")
+        {
+            directions = new int[] { 4 };
+        }
+    }
 
     private Vector3 getNextPoint(Vector3 oldPoint)
     {
-
-        // TODO: Fikse alle retninger
-        int[] upArray = { 0, 0, 1, 3 };
-        int[] rightArray = { 0, 1, 1, 2 };
-        int[] downArray = { 1, 2, 2, 3 };
-        int[] leftArray = { 0, 2, 3, 3 };
 
         Vector3 spawnUp = new Vector3(oldPoint.x, oldPoint.y + MOVE_VALUE, 0);
         Vector3 spawnRight = new Vector3(oldPoint.x + MOVE_VALUE, oldPoint.y, 0);
         Vector3 spawnDown = new Vector3(oldPoint.x, oldPoint.y - MOVE_VALUE, 0);
         Vector3 spawnLeft = new Vector3(oldPoint.x - MOVE_VALUE, oldPoint.y, 0);
 
-        int direction = rightArray[Random.Range(0, rightArray.Length)];
+        // get player position
+        Vector3 playerPos = GameObject.Find("Player").transform.position;
+
+        Vector3 playerDirection = playerPos - transform.position;
+
+        // get direction to player
+        float angle = Mathf.Atan2(playerDirection.y, playerDirection.x) * Mathf.Rad2Deg;
+
+        // find point 1f away in the direction of the player
+        Vector3 playerPoint = new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad), 0) * 1f + transform.position;
+
+        int direction = directions[Random.Range(0, directions.Length)];
 
         switch (direction)
         {
@@ -178,6 +206,14 @@ public class ArmController : MonoBehaviour
 
                 lastdirection = direction;
                 return spawnDown;
+            case 3:
+                /*
+                if (!canSpawn(spawnLeft)) { break; }
+                */
+                lastdirection = direction;
+                return spawnLeft;
+            case 4:
+                return playerPoint;
         }
         return oldPoint;
     }
