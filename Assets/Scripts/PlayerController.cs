@@ -93,9 +93,7 @@ public class PlayerController : MonoBehaviour
             {
                 currentlyGrabbedObject.position = new Vector2(transform.position.x + HOLD_OFFSET, transform.position.y);
             }
-
         }
-
     }
 
     void MoveTowards(Vector3 pos)
@@ -112,6 +110,11 @@ public class PlayerController : MonoBehaviour
             isBouncing = true;
             Invoke("StopBounce", 0.3f);
             onPlayerDamage();
+        }
+        if (col.gameObject.tag == "bed")
+        {
+            isBouncing = true;
+            Invoke("StopBounce", 0.3f);
         }
     }
 
@@ -156,8 +159,6 @@ public class PlayerController : MonoBehaviour
                 rb.MovePosition(newPos);
 
             }
-
-
             animator.SetBool("isMoving", true);
         }
         else
@@ -181,6 +182,5 @@ public class PlayerController : MonoBehaviour
     {
         movementInput = movementValue.Get<Vector2>();
     }
-
 
 }
