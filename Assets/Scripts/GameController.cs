@@ -35,7 +35,7 @@ public class GameController : MonoBehaviour
     private float _timeAccumulated;
     public float maxAmount = 10;
 
-    public bool CanPlaceObj => _timeAccumulated > threshold && !Physics2D.OverlapCircle(pos, 0.5f) && transform.childCount < maxAmount;
+    public bool CanPlaceObj => _timeAccumulated > threshold && !Physics2D.OverlapCircle(pos, 1f) && transform.childCount < maxAmount;
 
     public delegate void BreakObject();
     public static event BreakObject onBreak;
@@ -45,6 +45,9 @@ public class GameController : MonoBehaviour
     public LayerMask ToyObjects;
 
     public Transform holdpoint;
+
+    public delegate void StartMoving();
+    public static event StartMoving move;
 
     void Update()
     {
@@ -60,37 +63,9 @@ public class GameController : MonoBehaviour
         }
         _timeAccumulated += Time.deltaTime;
 
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            Debug.Log("spacebar_down: ");
-            Vector2 pos = GameObject.Find("Player").transform.position;
-            Debug.Log(pos);
-            if (!currentlyGrabbedObject)
-            {
-                Collider2D hit = Physics2D.OverlapCircle(pos, 2f, ToyObjects);
-                Debug.Log("heihei: " + hit);
-                if (hit)
-                {
-                    if (hit.GetType() == typeof(PolygonCollider2D)) { return; }
-                    currentlyGrabbedObject = hit.transform;
-                    /* If we want to change the sprite when grabbed */
-                    //hit.GetComponent<SpriteRenderer>().sprite = bBoxDarkSprite;
-                }
-            }
-            else // release currently grabbed object
-            {
-                currentlyGrabbedObject = null;
-            }
-
-        }
-
-        if (currentlyGrabbedObject)
-        {
-            currentlyGrabbedObject.position = holdpoint.position + Vector3.right * 0.18f;
-        }
     }
 
-// TODO: Add the rest of the objects here
+    // TODO: Add the rest of the objects here
     void makeShine(IToyObject obj)
     {
         if ((player.transform.position - obj.gameObject.transform.position).sqrMagnitude < 3 * 20) // check if the player is close to the object
@@ -153,37 +128,31 @@ public class GameController : MonoBehaviour
 
     void OnEnable()
     {
-        ArmController.onHit += OnHit;
+        ArmController.Push += Push;
     }
 
 
     void OnDisable()
     {
-        ArmController.onHit -= OnHit;
+        ArmController.Push -= Push;
     }
 
-    void OnHit()
+    void Push(GameObject toy)
     {
-        GameObject closestToy = GetClosestToy();
-        closestToy.GetComponent<Rigidbody2D>().AddForce((closestToy.transform.position - hand.transform.position) * 50, ForceMode2D.Impulse);
-        closestToy.GetComponent<Rigidbody2D>().drag = 1;
-        onBreak();
+        StartCoroutine(WaitToMove(toy));
     }
 
-    GameObject GetClosestToy()
+    IEnumerator WaitToMove(GameObject toy)
     {
-        GameObject bestTarget = null;
-        float closestDistanceSqr = Mathf.Infinity;
-        Vector3 currentPosition = hand.transform.position;
-        for (int i = 0; i < spawnedObjects.Count; i++) {
-            Vector3 directionToTarget = spawnedObjects[i].gameObject.transform.position - currentPosition;
-            float dSqrToTarget = directionToTarget.sqrMagnitude;
-            if (dSqrToTarget < closestDistanceSqr) {
-                closestDistanceSqr = dSqrToTarget;
-                bestTarget = spawnedObjects[i].gameObject;
-            }
+        yield return new WaitForSeconds(5);
+
+        if (move != null)
+        {
+            toy.GetComponent<Rigidbody2D>().AddForce((toy.transform.position - hand.transform.position) * 5, ForceMode2D.Impulse);
+            toy.GetComponent<Rigidbody2D>().drag = 1f;
+            move();
         }
-        return bestTarget;
+
     }
 
     // Start is called before the first frame update
@@ -202,12 +171,25 @@ public class GameController : MonoBehaviour
 
     private void SpawnObj()
     {
-        int whichItem = Random.Range (0, spawnableObjects.Length - 2); // change to -1 when box if fixed
-        Debug.Log("SpawnObj");
-        pos = new Vector3(Random.Range(-45, 45), Random.Range(-25, 25), 0);
+        int whichItem = Random.Range(0, spawnableObjects.Length - 2); // change to -1 when box if fixed
+
+        // fix this
+        while (!CanPlaceObj)
+        {
+            pos = new Vector3(Random.Range(-45, 45), Random.Range(-25, 25), 0);
+            if (Physics2D.OverlapCircle(pos, 1f))
+            {
+                continue;
+            }
+            else
+            {
+                break;
+            }
+        }
         GameObject obj = Instantiate(spawnableObjects[whichItem].gameObject, pos, Quaternion.identity);
         obj.transform.parent = transform;
         spawnedObjects.Add(new ToyObject(obj, spawnableObjects[whichItem].strength));
+
     }
 
 

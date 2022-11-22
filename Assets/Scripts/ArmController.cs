@@ -17,8 +17,8 @@ public class ArmController : MonoBehaviour
     //https://www.youtube.com/watch?v=2BH1yQXCpeU
     //https://github.com/llamacademy/line-renderer-collider/tree/main/Assets/Scripts
 
-    public delegate void HitObject();
-    public static event HitObject onHit;
+    public delegate void PushObject(GameObject toy);
+    public static event PushObject Push;
 
     private bool canMove = true;
 
@@ -27,54 +27,35 @@ public class ArmController : MonoBehaviour
 
     void OnEnable()
     {
-        GameController.onBreak += setCanMove;
-        HandController.collision += collide;
+        //GameController.onBreak += setCanMove;
+        //HandController.collision += collide;
+        ToyController.handCollision += Collide;
+        GameController.move += Move;
     }
 
     void OnDisable()
     {
-        GameController.onBreak += setCanMove;
-        HandController.collision += collide;
+        //GameController.onBreak += setCanMove;
+        //HandController.collision += collide;
+        ToyController.handCollision += Collide;
+        GameController.move += Move;
     }
 
-    void collide()
+    void Collide(GameObject toy)
     {
-        Debug.Log("Collision ARM");
-        canMove = false;
-        if (onHit != null)
-        {
-            StartCoroutine(Hit());
-        }
+        this.canMove = false;
+        Push(toy);
     }
 
-    IEnumerator Hit()
-    {
-        while (!canMove)
-        {
-            yield return new WaitForSeconds(1f);
-            print("Hitting! " + canMove);
-            if (onHit != null)
-            {
-                onHit();
-            }
-        }
-
-    }
-
-
-    private void setCanMove()
-    {
+    void Move() { 
         this.canMove = true;
-        Debug.Log("Can move");
     }
-
 
     private void Awake()
     {
         lineRenderer = GetComponent<LineRenderer>();
         points = new Vector3[lineRenderer.positionCount];
         lineRenderer.GetPositions(points);
-        //Debug.Log(points.Length);
     }
 
     void Start()
@@ -95,7 +76,7 @@ public class ArmController : MonoBehaviour
 
     void Spawn()
     {
-        if (!canMove) { StartCoroutine(Hit()); return; } // if canMove is false, then we hit something and we should not spawn a new arm
+        if (!canMove) { return; } // if canMove is false, then we hit something and we should not spawn a new arm
         Vector3[] newPoints = new Vector3[points.Length + 1];
         lineRenderer.GetPositions(newPoints);
         Vector3 lastPoint = newPoints[newPoints.Length - 2];
@@ -137,7 +118,8 @@ public class ArmController : MonoBehaviour
 
         while (t < 1)
         {
-            if (!canMove) { break; }
+            //if (!canMove) { break; }
+            while (!canMove) { yield return null; }
             t += Time.deltaTime / time;
 
             // move hand
@@ -179,7 +161,7 @@ public class ArmController : MonoBehaviour
                 if (!canSpawn(spawnUp)) { break; }
                 */
                 if (lastdirection == 2) { return oldPoint; }
-                
+
                 lastdirection = direction;
                 return spawnUp;
 
@@ -194,7 +176,7 @@ public class ArmController : MonoBehaviour
                 if (!canSpawn(spawnDown)) { break; }
                 */
                 if (lastdirection == 0) { return oldPoint; }
-                
+
                 lastdirection = direction;
                 return spawnDown;
         }
@@ -202,98 +184,98 @@ public class ArmController : MonoBehaviour
     }
 
     /* kok: https://github.com/llamacademy/line-renderer-collider/blob/main/Assets/Scripts/LineRendererSmoother.cs */
-                public void GenerateMeshCollider()
+    public void GenerateMeshCollider()
+    {
+
+        Mesh mesh = new Mesh();
+        lineRenderer.BakeMesh(mesh);
+
+        // Get triangles and vertices from mesh
+        int[] triangles = mesh.triangles;
+        Vector3[] vertices = mesh.vertices;
+
+        // Get just the outer edges from the mesh's triangles (ignore or remove any shared edges)
+        Dictionary<string, KeyValuePair<int, int>> edges = new Dictionary<string, KeyValuePair<int, int>>();
+        for (int i = 0; i < triangles.Length; i += 3)
+        {
+            for (int e = 0; e < 3; e++)
+            {
+                int vert1 = triangles[i + e];
+                int vert2 = triangles[i + e + 1 > i + 2 ? i : i + e + 1];
+                string edge = Mathf.Min(vert1, vert2) + ":" + Mathf.Max(vert1, vert2);
+                if (edges.ContainsKey(edge))
+                {
+                    edges.Remove(edge);
+                }
+                else
+                {
+                    edges.Add(edge, new KeyValuePair<int, int>(vert1, vert2));
+                }
+            }
+        }
+
+        // Create edge lookup (Key is first vertex, Value is second vertex, of each edge)
+        Dictionary<int, int> lookup = new Dictionary<int, int>();
+        foreach (KeyValuePair<int, int> edge in edges.Values)
+        {
+            if (lookup.ContainsKey(edge.Key) == false)
+            {
+                lookup.Add(edge.Key, edge.Value);
+            }
+        }
+
+        Destroy(gameObject.GetComponent<PolygonCollider2D>());
+
+        // Create empty polygon collider
+        PolygonCollider2D polygonCollider = gameObject.AddComponent<PolygonCollider2D>();
+        polygonCollider.pathCount = 0;
+
+        // Loop through edge vertices in order
+        int startVert = 0;
+        int nextVert = startVert;
+        int highestVert = startVert;
+        List<Vector2> colliderPath = new List<Vector2>();
+        while (true)
+        {
+
+            // Add vertex to collider path
+            colliderPath.Add(vertices[nextVert]);
+
+            // Get next vertex
+            nextVert = lookup[nextVert];
+
+            // Store highest vertex (to know what shape to move to next)
+            if (nextVert > highestVert)
+            {
+                highestVert = nextVert;
+            }
+
+            // Shape complete
+            if (nextVert == startVert)
+            {
+
+                // Add path to polygon collider
+                polygonCollider.pathCount++;
+                polygonCollider.SetPath(polygonCollider.pathCount - 1, colliderPath.ToArray());
+                colliderPath.Clear();
+
+                // Go to next shape if one exists
+                if (lookup.ContainsKey(highestVert + 1))
                 {
 
-                    Mesh mesh = new Mesh();
-                    lineRenderer.BakeMesh(mesh);
+                    // Set starting and next vertices
+                    startVert = highestVert + 1;
+                    nextVert = startVert;
 
-                    // Get triangles and vertices from mesh
-                    int[] triangles = mesh.triangles;
-                    Vector3[] vertices = mesh.vertices;
-
-                    // Get just the outer edges from the mesh's triangles (ignore or remove any shared edges)
-                    Dictionary<string, KeyValuePair<int, int>> edges = new Dictionary<string, KeyValuePair<int, int>>();
-                    for (int i = 0; i < triangles.Length; i += 3)
-                    {
-                        for (int e = 0; e < 3; e++)
-                        {
-                            int vert1 = triangles[i + e];
-                            int vert2 = triangles[i + e + 1 > i + 2 ? i : i + e + 1];
-                            string edge = Mathf.Min(vert1, vert2) + ":" + Mathf.Max(vert1, vert2);
-                            if (edges.ContainsKey(edge))
-                            {
-                                edges.Remove(edge);
-                            }
-                            else
-                            {
-                                edges.Add(edge, new KeyValuePair<int, int>(vert1, vert2));
-                            }
-                        }
-                    }
-
-                    // Create edge lookup (Key is first vertex, Value is second vertex, of each edge)
-                    Dictionary<int, int> lookup = new Dictionary<int, int>();
-                    foreach (KeyValuePair<int, int> edge in edges.Values)
-                    {
-                        if (lookup.ContainsKey(edge.Key) == false)
-                        {
-                            lookup.Add(edge.Key, edge.Value);
-                        }
-                    }
-
-                    Destroy(gameObject.GetComponent<PolygonCollider2D>());
-
-                    // Create empty polygon collider
-                    PolygonCollider2D polygonCollider = gameObject.AddComponent<PolygonCollider2D>();
-                    polygonCollider.pathCount = 0;
-
-                    // Loop through edge vertices in order
-                    int startVert = 0;
-                    int nextVert = startVert;
-                    int highestVert = startVert;
-                    List<Vector2> colliderPath = new List<Vector2>();
-                    while (true)
-                    {
-
-                        // Add vertex to collider path
-                        colliderPath.Add(vertices[nextVert]);
-
-                        // Get next vertex
-                        nextVert = lookup[nextVert];
-
-                        // Store highest vertex (to know what shape to move to next)
-                        if (nextVert > highestVert)
-                        {
-                            highestVert = nextVert;
-                        }
-
-                        // Shape complete
-                        if (nextVert == startVert)
-                        {
-
-                            // Add path to polygon collider
-                            polygonCollider.pathCount++;
-                            polygonCollider.SetPath(polygonCollider.pathCount - 1, colliderPath.ToArray());
-                            colliderPath.Clear();
-
-                            // Go to next shape if one exists
-                            if (lookup.ContainsKey(highestVert + 1))
-                            {
-
-                                // Set starting and next vertices
-                                startVert = highestVert + 1;
-                                nextVert = startVert;
-
-                                // Continue to next loop
-                                continue;
-                            }
-
-                            // No more verts
-                            break;
-                        }
-                    }
+                    // Continue to next loop
+                    continue;
                 }
+
+                // No more verts
+                break;
+            }
+        }
+    }
 
     private Collider2D[] colliders;
 
@@ -322,7 +304,6 @@ public class ArmController : MonoBehaviour
             }
             return false;
         }
-        Debug.Log("Can spawn");
         return true;
     }
 
