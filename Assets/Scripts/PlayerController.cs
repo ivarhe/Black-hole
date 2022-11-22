@@ -85,7 +85,6 @@ public class PlayerController : MonoBehaviour
 
         if (currentlyGrabbedObject)
         {
-            Debug.Log("grabbed: " + currentlyGrabbedObject.name);
             if (isLeft)
             {
                 currentlyGrabbedObject.position = new Vector2(transform.position.x - HOLD_OFFSET, transform.position.y);
@@ -94,10 +93,7 @@ public class PlayerController : MonoBehaviour
             {
                 currentlyGrabbedObject.position = new Vector2(transform.position.x + HOLD_OFFSET, transform.position.y);
             }
-            //currentlyGrabbedObject.position = holdpoint.position + Vector3.right * HOLD_OFFSET;
-
         }
-
     }
 
     void MoveTowards(Vector3 pos)
@@ -109,26 +105,16 @@ public class PlayerController : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D col)
     {
         Debug.Log("collide with player " + col.gameObject.name);
-        if (col.gameObject.tag == "arm" || col.gameObject.tag == "hand")
+        if (col.gameObject.tag == "hand")
         {
-            // get direction of collision
             isBouncing = true;
             Invoke("StopBounce", 0.3f);
-
-            Debug.Log("collide with arm 3");
             onPlayerDamage();
-            if (hearts.Count > 1)
-            {
-                GameObject heart = hearts[hearts.Count - 1];
-                hearts.Remove(heart);
-                Destroy(heart);
-            }
-            else
-            {
-                GameObject heart = hearts[hearts.Count - 1];
-                Destroy(heart);
-            }
-            //rb.MovePosition(rb.position - movementInput * moveSpeed * 20 * Time.fixedDeltaTime);
+        }
+        if (col.gameObject.tag == "bed")
+        {
+            isBouncing = true;
+            Invoke("StopBounce", 0.3f);
         }
     }
 
@@ -152,38 +138,27 @@ public class PlayerController : MonoBehaviour
     {
         if (movementInput != Vector2.zero)
         {
-            int count = 0; /*rb.Cast(
-                movementInput,
-                movementFilter,
-                castCollisions,
-                moveSpeed * Time.fixedDeltaTime// + collisionOffset
-            );*/
-
-            if (count == 0)
+            if (!isBouncing)
             {
-                if (!isBouncing)
-                {
-                    rb.MovePosition(rb.position + movementInput * moveSpeed * Time.fixedDeltaTime);
-                }
-                else
-                {
-                    // find a safe spot to move to
-                    Vector3 pos = transform.position;
-                    Vector3 newPos = pos - (Vector3)movementInput * moveSpeed * Time.fixedDeltaTime;
-                    for (int i = 0; i < 10; i++)
-                    {
-                        //newPos = pos - (Vector3)movementInput * i;
-                        Debug.Log("newPos: " + newPos);
-                        if (canSpawn(newPos))
-                        {
-                            break;
-                        }
-                    }
-                    rb.MovePosition(newPos);   
-
-                }
+                rb.MovePosition(rb.position + movementInput * moveSpeed * Time.fixedDeltaTime);
             }
+            else
+            {
+                // find a safe spot to move to
+                Vector3 pos = transform.position;
+                Vector3 newPos = pos - (Vector3)movementInput * moveSpeed * Time.fixedDeltaTime;
+                for (int i = 0; i < 10; i++)
+                {
+                    //newPos = pos - (Vector3)movementInput * i;
+                    Debug.Log("newPos1: " + newPos);
+                    if (canSpawn(newPos))
+                    {
+                        break;
+                    }
+                }
+                rb.MovePosition(newPos);
 
+            }
             animator.SetBool("isMoving", true);
         }
         else
@@ -207,6 +182,5 @@ public class PlayerController : MonoBehaviour
     {
         movementInput = movementValue.Get<Vector2>();
     }
-
 
 }
