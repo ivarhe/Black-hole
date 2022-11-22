@@ -19,7 +19,7 @@ public class ToyController : MonoBehaviour
             //set kinematic to false
             GetComponent<Rigidbody2D>().isKinematic = true;
         }
-        if (col.gameObject.tag == "arm")
+        if (col.gameObject.tag == "arm" || col.gameObject.tag == "hand")
         {
             Debug.Log("collide");
             if (collision != null)
