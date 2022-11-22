@@ -135,7 +135,7 @@ GameObject:
   - component: {fileID: 192388534}
   - component: {fileID: 192388533}
   m_Layer: 5
-  m_Name: ifhighscoretext
+  m_Name: GameOverText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1052,6 +1052,7 @@ RectTransform:
   - {fileID: 749561668}
   - {fileID: 1955155607}
   - {fileID: 781640402}
+  - {fileID: 192388532}
   m_Father: {fileID: 1801856125}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1084,9 +1085,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc4534d2c794bcb41b0e8efdacc5a760, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scoreText: {fileID: 1955155608}
+  scoreText: {fileID: 0}
+  finalScoreText: {fileID: 1955155608}
   highScoreText: {fileID: 781640403}
-  ifHighScore: {fileID: 192388533}
+  gameOverText: {fileID: 192388533}
   scoreCount: 0
   pointsPerSecond: 0
   ScoreIncreasing: 0
@@ -1548,7 +1550,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: -2.0641403, z: -28.023468, w: 0}
+  m_margin: {x: 0, y: -2.0641403, z: -84.88449, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0

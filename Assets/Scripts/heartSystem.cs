@@ -22,6 +22,7 @@ public class heartSystem : MonoBehaviour
     {
         if (dead == true)
         {
+            PlayerPrefs.SetInt("Dead", 1);
             Debug.Log("we dead");
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
         }

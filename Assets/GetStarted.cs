@@ -13,6 +13,7 @@ public class GetStarted : MonoBehaviour
 
         scoreStarter = FindObjectOfType<Score>();
         scoreStarter.scoreCount = 0;
+        PlayerPrefs.SetFloat("Score", 0);
         scoreStarter.ScoreIncreasing = true;
 
     }

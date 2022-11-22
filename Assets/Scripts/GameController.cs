@@ -35,7 +35,7 @@ public class GameController : MonoBehaviour
     private float _timeAccumulated;
     public float maxAmount = 10;
 
-    public bool CanPlaceObj => _timeAccumulated > threshold && !Physics2D.OverlapCircle(pos, 0.5f) && transform.childCount < maxAmount;
+    public bool CanPlaceObj => _timeAccumulated > threshold && !Physics2D.OverlapCircle(pos, 4f) && transform.childCount < maxAmount;
 
     public delegate void BreakObject();
     public static event BreakObject onBreak;
@@ -172,10 +172,10 @@ public class GameController : MonoBehaviour
     private void SpawnObj()
     {
         int whichItem = Random.Range(0, spawnableObjects.Length - 2); // change to -1 when box if fixed
-        pos = new Vector3(Random.Range(-45, 45), Random.Range(-25, 25), 0);
         GameObject obj = Instantiate(spawnableObjects[whichItem].gameObject, pos, Quaternion.identity);
         obj.transform.parent = transform;
         spawnedObjects.Add(new ToyObject(obj, spawnableObjects[whichItem].strength));
+
     }
 
 

@@ -9,6 +9,7 @@ public class PlayerController : MonoBehaviour
 
     public float moveSpeed = 30f;
     public float collisionOffset = 0.05f;
+    public float HOLD_OFFSET = 4f;
     public ContactFilter2D movementFilter;
     Vector2 movementInput;
     SpriteRenderer spriteRenderer;
@@ -24,6 +25,7 @@ public class PlayerController : MonoBehaviour
     private Transform currentlyGrabbedObject;
 
     public List<GameObject> hearts;
+    private bool isLeft = false;
 
 
 
@@ -64,7 +66,7 @@ public class PlayerController : MonoBehaviour
             Vector2 pos = GameObject.Find("Player").transform.position;
             if (!currentlyGrabbedObject)
             {
-                Collider2D hit = Physics2D.OverlapCircle(pos, 2f, ToyObjects);
+                Collider2D hit = Physics2D.OverlapCircle(pos, 6f, ToyObjects);
                 if (hit)
                 {
                     if (hit.GetType() == typeof(PolygonCollider2D)) { return; }
@@ -81,24 +83,37 @@ public class PlayerController : MonoBehaviour
         if (currentlyGrabbedObject)
         {
             Debug.Log("grabbed: " + currentlyGrabbedObject.name);
-            currentlyGrabbedObject.position = holdpoint.position + Vector3.right * 0.18f;
+            if (isLeft)
+            {
+                currentlyGrabbedObject.position = new Vector2(transform.position.x - HOLD_OFFSET, transform.position.y);
+            }
+            else
+            {
+                currentlyGrabbedObject.position = new Vector2(transform.position.x + HOLD_OFFSET, transform.position.y);
+            }
+            //currentlyGrabbedObject.position = holdpoint.position + Vector3.right * HOLD_OFFSET;
 
         }
 
     }
+
+    void MoveTowards(Vector3 pos)
+    {
+        rb.position = Vector3.Lerp(transform.position, pos, moveSpeed * Time.deltaTime);
+    }
+    bool isBouncing;
 
     private void OnCollisionEnter2D(Collision2D col)
     {
         Debug.Log("collide with player " + col.gameObject.name);
         if (col.gameObject.tag == "arm" || col.gameObject.tag == "hand")
         {
-            // get the direction of the collision
-            Vector2 direction = col.contacts[0].point - (Vector2)transform.position;
-            direction = -direction.normalized;
-            // move the player away from the collision
-            transform.position = (Vector2)transform.position + direction * collisionOffset * 100;
+            // get direction of collision
+            isBouncing = true;
+            Invoke("StopBounce", 0.3f);
 
-            if (hearts.Count > 0)
+            Debug.Log("collide with arm 3");
+            if (hearts.Count > 1)
             {
                 GameObject heart = hearts[hearts.Count - 1];
                 hearts.Remove(heart);
@@ -106,38 +121,81 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
+                GameObject heart = hearts[hearts.Count - 1];
+                Destroy(heart);
                 SceneManager.LoadScene("GameOver");
             }
-            rb.MovePosition(rb.position - movementInput * moveSpeed * 20 * Time.fixedDeltaTime);
+            //rb.MovePosition(rb.position - movementInput * moveSpeed * 20 * Time.fixedDeltaTime);
         }
     }
 
+    void StopBounce()
+    {
+        isBouncing = false;
+    }
+
+    private bool canSpawn(Vector3 pos)
+    {
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(pos, 2f);
+        if (colliders.Length > 0)
+        {
+            return false;
+        }
+        return true;
+    }
 
 
     private void FixedUpdate()
     {
         if (movementInput != Vector2.zero)
         {
-            int count = rb.Cast(
+            int count = 0; /*rb.Cast(
                 movementInput,
                 movementFilter,
                 castCollisions,
-                moveSpeed * Time.fixedDeltaTime + collisionOffset
-            );
+                moveSpeed * Time.fixedDeltaTime// + collisionOffset
+            );*/
 
             if (count == 0)
             {
-                rb.MovePosition(rb.position + movementInput * moveSpeed * Time.fixedDeltaTime);
+                if (!isBouncing)
+                {
+                    rb.MovePosition(rb.position + movementInput * moveSpeed * Time.fixedDeltaTime);
+                }
+                else
+                {
+                    // find a safe spot to move to
+                    Vector3 pos = transform.position;
+                    Vector3 newPos = pos - (Vector3)movementInput * moveSpeed * Time.fixedDeltaTime;
+                    for (int i = 0; i < 10; i++)
+                    {
+                        //newPos = pos - (Vector3)movementInput * i;
+                        Debug.Log("newPos: " + newPos);
+                        if (canSpawn(newPos))
+                        {
+                            break;
+                        }
+                    }
+                    rb.MovePosition(newPos);   
+
+                }
             }
 
             animator.SetBool("isMoving", true);
-        } else{
+        }
+        else
+        {
             animator.SetBool("isMoving", false);
         }
         // Set direction of sprite to movement direction
-        if (movementInput.x < 0) {
+        if (movementInput.x < 0)
+        {
+            isLeft = true;
             spriteRenderer.flipX = true;
-        } else if (movementInput.x > 0) {
+        }
+        else if (movementInput.x > 0)
+        {
+            isLeft = false;
             spriteRenderer.flipX = false;
         }
     }
