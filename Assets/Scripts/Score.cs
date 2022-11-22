@@ -10,6 +10,8 @@ public class Score : MonoBehaviour
    
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI highScoreText;
+
+    public TextMeshProUGUI ifHighScore;
     public float scoreCount;
     public static float highScoreCount;
 
@@ -20,13 +22,11 @@ public class Score : MonoBehaviour
 
     void Start() {
             highScoreCount = PlayerPrefs.GetFloat("HighScore");
-            scoreCount = PlayerPrefs.GetFloat("Score");
     }
     void Update()
     {
         if (ScoreIncreasing) {
             scoreCount += pointsPerSecond * Time.deltaTime;
-            PlayerPrefs.SetFloat("Score", scoreCount);
         }
 
         scoreText.text = "Your Score: " + Mathf.Round(scoreCount);
@@ -39,6 +39,12 @@ public class Score : MonoBehaviour
         Debug.Log("highscore: " + highScoreCount);
     }
 
-    //if start game: start timer
-    //if player death: stop timer
+    void setTexts() {
+        if (scoreCount < highScoreCount) {
+            ifHighScore.text = "hey";
+        }
+    }
+
+    //if highscore: send en tekst
+    //else: en annen
 }
