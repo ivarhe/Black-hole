@@ -27,6 +27,9 @@ public class PlayerController : MonoBehaviour
     public List<GameObject> hearts;
     private bool isLeft = false;
 
+    public delegate void PlayerDamageEvent();
+    public static event PlayerDamageEvent onPlayerDamage;
+
 
 
 
@@ -113,6 +116,7 @@ public class PlayerController : MonoBehaviour
             Invoke("StopBounce", 0.3f);
 
             Debug.Log("collide with arm 3");
+            onPlayerDamage();
             if (hearts.Count > 1)
             {
                 GameObject heart = hearts[hearts.Count - 1];
@@ -123,7 +127,6 @@ public class PlayerController : MonoBehaviour
             {
                 GameObject heart = hearts[hearts.Count - 1];
                 Destroy(heart);
-                SceneManager.LoadScene("GameOver");
             }
             //rb.MovePosition(rb.position - movementInput * moveSpeed * 20 * Time.fixedDeltaTime);
         }

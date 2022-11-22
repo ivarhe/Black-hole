@@ -17,7 +17,7 @@ public class ToyController : MonoBehaviour
         if (col.gameObject.tag == "player")
         {
             //set kinematic to false
-            GetComponent<Rigidbody2D>().isKinematic = true;
+            //GetComponent<Rigidbody2D>().isKinematic = true;
         }
         if (col.gameObject.tag == "arm")
         {
@@ -43,7 +43,7 @@ public class ToyController : MonoBehaviour
         if (col.gameObject.tag == "player")
         {
             //set kinematic to false
-            GetComponent<Rigidbody2D>().isKinematic = false;
+            //GetComponent<Rigidbody2D>().isKinematic = false;
         }
     }
 

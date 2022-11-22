@@ -175,7 +175,19 @@ public class GameController : MonoBehaviour
         GameObject obj = Instantiate(spawnableObjects[whichItem].gameObject, pos, Quaternion.identity);
         obj.transform.parent = transform;
         spawnedObjects.Add(new ToyObject(obj, spawnableObjects[whichItem].strength));
+        // find new position for next object
+        while (Physics2D.OverlapCircle(pos, 4f) || isOutsideOfBed(pos))
+        {
+            pos = new Vector3(Random.Range(-65, 65), Random.Range(-35, 35), 0);
+            Debug.Log("new pos" + pos);
+        }
 
+
+    }
+
+    private bool isOutsideOfBed(Vector3 pos)
+    {
+        return pos.x < -10 || pos.x > 10 || pos.y < -15 || pos.y > 15;
     }
 
 
