@@ -19,23 +19,23 @@ public class Score : MonoBehaviour
     // Update is called once per frame
 
     void Start() {
-        if(PlayerPrefs.GetFloat("HighScore") != null) {
             highScoreCount = PlayerPrefs.GetFloat("HighScore");
-        }
+            scoreCount = PlayerPrefs.GetFloat("Score");
     }
     void Update()
     {
         if (ScoreIncreasing) {
             scoreCount += pointsPerSecond * Time.deltaTime;
+            PlayerPrefs.SetFloat("Score", scoreCount);
         }
 
-        scoreText.text = "Score: " + Mathf.Round(scoreCount);
+        scoreText.text = "Your Score: " + Mathf.Round(scoreCount);
 
         if (scoreCount > highScoreCount) {
             highScoreCount = scoreCount;
             PlayerPrefs.SetFloat("HighScore",highScoreCount);
         }
-        highScoreText.text = "Highscore " + Mathf.Round(highScoreCount);
+        highScoreText.text = "HighScore: " + Mathf.Round(highScoreCount);
         Debug.Log("highscore: " + highScoreCount);
     }
 
