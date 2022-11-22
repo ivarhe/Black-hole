@@ -19,7 +19,10 @@ public class ToyController : MonoBehaviour
             //set kinematic to false
             //GetComponent<Rigidbody2D>().isKinematic = true;
         }
-        if (col.gameObject.tag == "arm")
+
+        // check if the toy is colliding with a tailrenderer
+        if (col.gameObject.tag == "hand")
+
         {
             Debug.Log("collide");
             if (collision != null)
