@@ -7,6 +7,12 @@ public class HandController : MonoBehaviour
 
     public delegate void HandCollision();
     public static event HandCollision collision;
+    Animator animator;
+
+    void start()
+    {
+        animator = GetComponent<Animator>(); // To have our animator while the script is running.
+    }
 
     void OnCollisionEnter2D(Collision2D col)
     {
@@ -16,6 +22,7 @@ public class HandController : MonoBehaviour
             {
                 collision();
             }
+            animator.SetTrigger("Slap");
         }
     }
 }

@@ -22,7 +22,7 @@ class ToyObject : IToyObject
 public class GameController : MonoBehaviour
 {
 
-    public GameObject aBlockPrefab, bBlockPrefab, ballPrefab, carPrefab, boxPrefab, hand, player;
+    public GameObject aBlockPrefab, bBlockPrefab, ballPrefab, carPrefab, boxPrefab, handPrefab, armPrefab, player;
 
     public Sprite aBlockSprite, bBlockSprite, ballSprite, carSprite, boxSprite;
     public Sprite aBlockSpriteShine, bBlockSpriteShine, ballSpriteShine, carSpriteShine, boxSpriteShine;
@@ -31,14 +31,13 @@ public class GameController : MonoBehaviour
     private List<IToyObject> spawnedObjects = new List<IToyObject>();
     private Vector3 pos;
 
+    private Vector3[] startPos = new Vector3[14];
+
     [SerializeField] private float threshold = 2;
     private float _timeAccumulated;
     public float maxAmount = 10;
 
     public bool CanPlaceObj => _timeAccumulated > threshold && !Physics2D.OverlapCircle(pos, 4f) && transform.childCount < maxAmount;
-
-    public delegate void BreakObject();
-    public static event BreakObject onBreak;
 
     private Transform currentlyGrabbedObject;
     public LayerMask CollidableObjects;
@@ -148,7 +147,7 @@ public class GameController : MonoBehaviour
 
         if (move != null)
         {
-            toy.GetComponent<Rigidbody2D>().AddForce((toy.transform.position - hand.transform.position) * 5, ForceMode2D.Impulse);
+            toy.GetComponent<Rigidbody2D>().AddForce((toy.transform.position - handPrefab.transform.position) * 5, ForceMode2D.Impulse);
             toy.GetComponent<Rigidbody2D>().drag = 1f;
             move();
         }
@@ -163,19 +162,55 @@ public class GameController : MonoBehaviour
         spawnableObjects[2] = new ToyObject(ballPrefab, 3);
         spawnableObjects[3] = new ToyObject(carPrefab, 10);
         //spawnableObjects[4] = new ToyObject(boxPrefab, 15);
-        hand = GameObject.Find("hand");
         SpawnObj();
+
+        startPos[0] = new Vector3(-5.5f, 0f, 0);
+        startPos[1] = new Vector3(-5.5f, 4f, 0);
+        startPos[2] = new Vector3(-5.5f, 8f, 0);
+        startPos[3] = new Vector3(5.5f, 8f, 0);
+        startPos[4] = new Vector3(5.5f, 4f, 0);
+        startPos[5] = new Vector3(5.5f, 0f, 0);
+        startPos[6] = new Vector3(5.5f, -4f, 0);
+        startPos[7] = new Vector3(5.5f, -8f, 0);
+        startPos[8] = new Vector3(-5.5f, -8f, 0);
+        startPos[9] = new Vector3(-5.5f, -4f, 0);
+        startPos[10] = new Vector3(-2.5f, -9.5f, 0);
+        startPos[11] = new Vector3(2.5f, -9.5f, 0);
+        startPos[12] = new Vector3(-2.5f, 9.5f, 0);
+        startPos[13] = new Vector3(2.5f, 9.5f, 0);
+
+        GameObject arm = Instantiate(armPrefab, new Vector3(), Quaternion.identity);
+
+        GameObject hand = Instantiate(handPrefab, startPos[5], Quaternion.identity);
+        arm.GetComponent<ArmController>().hand = hand;
+        //arm.SendMessage("SetTargetPosition", startPos[5]);
 
     }
 
 
     private void SpawnObj()
     {
+        // find new position for next object
+        pos = new Vector3();
+        while (Physics2D.OverlapCircle(pos, 4f) || !isOutsideOfBed(pos))
+        {
+            if (spawnedObjects.Count == maxAmount)
+            {
+                return;
+            }
+            pos = new Vector3(Random.Range(-65, 65), Random.Range(-35, 35), 0);
+            Debug.Log("new pos" + pos);
+        }
         int whichItem = Random.Range(0, spawnableObjects.Length - 2); // change to -1 when box if fixed
         GameObject obj = Instantiate(spawnableObjects[whichItem].gameObject, pos, Quaternion.identity);
         obj.transform.parent = transform;
         spawnedObjects.Add(new ToyObject(obj, spawnableObjects[whichItem].strength));
 
+    }
+
+    private bool isOutsideOfBed(Vector3 pos)
+    {
+        return pos.x < -10 || pos.x > 10 || pos.y < -15 || pos.y > 15;
     }
 
 
