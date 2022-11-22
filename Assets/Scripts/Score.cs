@@ -61,12 +61,4 @@ public class Score : MonoBehaviour
         Debug.Log("highscore: " + highScoreCount);
     }
 
-    void setTexts() {
-        if (scoreCount < highScoreCount) {
-            ifHighScore.text = "hey";
-        }
-    }
-
-    //if highscore: send en tekst
-    //else: en annen
 }
