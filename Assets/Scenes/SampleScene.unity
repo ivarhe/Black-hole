@@ -285,7 +285,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 40.666668
+  orthographic size: 39.333332
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -675,7 +675,6 @@ MonoBehaviour:
   scoreText: {fileID: 1968057038}
   highScoreText: {fileID: 2099961498}
   scoreCount: 0
-  highScoreCount: 0
   pointsPerSecond: 8
   ScoreIncreasing: 1
 --- !u!1001 &753758351
@@ -919,6 +918,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e578d1ec8f8a44659b8458ea153bd89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!95 &962963887
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 962963877}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: e7865f90cf3d13a41833c64fa5e7088c, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &994641854 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2856258050623005040, guid: be3356472068742f99a6fd3346b25740, type: 3}
@@ -1689,7 +1708,7 @@ RectTransform:
   - {fileID: 1968057037}
   - {fileID: 2099961497}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -1864,7 +1883,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 658903470327101210, guid: 0ca11911084f44248a906f7c13162671, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 10
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 658903470327101210, guid: 0ca11911084f44248a906f7c13162671, type: 3}
       propertyPath: m_LocalPosition.y
