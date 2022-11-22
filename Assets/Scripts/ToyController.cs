@@ -9,17 +9,19 @@ public class ToyController : MonoBehaviour
 
     public delegate void ToyCollision(GameObject toy);
     public delegate void HandCollision(GameObject toy);
-    public static event ToyCollision collision;
-    public static event HandCollision handCollision;
+    public static event ToyCollision collision; // event to drop the toy
+    public static event HandCollision handCollision; // event to handle collision with hand
 
     private void OnCollisionEnter2D(Collision2D col)
     {
         if (col.gameObject.tag == "player")
         {
             //set kinematic to false
-            GetComponent<Rigidbody2D>().isKinematic = true;
+            //GetComponent<Rigidbody2D>().isKinematic = true;
         }
-        if (col.gameObject.tag == "arm" || col.gameObject.tag == "hand")
+
+        // check if the toy is colliding with the bed
+        if (col.gameObject.tag == "bed")
         {
             Debug.Log("collide");
             if (collision != null)
@@ -34,7 +36,13 @@ public class ToyController : MonoBehaviour
             {
                 handCollision(gameObject);
             }
+            if (collision != null)
+            {
+                collision(gameObject);
+            }
+            
         }
+
     }
 
     // cancel collision when the player leaves the toy
@@ -43,7 +51,7 @@ public class ToyController : MonoBehaviour
         if (col.gameObject.tag == "player")
         {
             //set kinematic to false
-            GetComponent<Rigidbody2D>().isKinematic = false;
+            //GetComponent<Rigidbody2D>().isKinematic = false;
         }
     }
 

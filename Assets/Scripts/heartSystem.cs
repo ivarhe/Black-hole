@@ -11,31 +11,33 @@ public class heartSystem : MonoBehaviour
     public int life;
     public bool dead;
 
-    public static event Action onPlayerDeath;
+    void OnEnable()
+    {
+        PlayerController.onPlayerDamage += TakeDamage;
+    }
+
+    void OnDisable()
+    {
+        PlayerController.onPlayerDamage -= TakeDamage;
+    }
 
     private void start()
     {
         life = hearts.Length;
     }
-    // Update is called once per frame
-    void Update()
-    {
-        if (dead == true)
-        {
-            Debug.Log("we dead");
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
-        }
-    }
 
-    public void TakeDamage(int d)
+    public void TakeDamage()
     {
         if (life >= 1)
         {
-            life -= d;
+            life -= 1;
             Destroy(hearts[life].gameObject);
             if (life < 1)
             {
                 dead = true;
+                PlayerPrefs.SetInt("Dead", 1);
+                Debug.Log("we dead");
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
             }
         }
 

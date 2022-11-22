@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,9 +6,9 @@ using UnityEngine;
 public class ArmController : MonoBehaviour
 {
 
-    private LineRenderer lineRenderer;
+    public LineRenderer lineRenderer;
     public LayerMask ToyObjects;
-    private Vector3[] points;
+    private List<Vector3> points;
     private GameObject Arm;
     public GameObject hand;
     float MOVE_VALUE = 2f;
@@ -23,20 +24,14 @@ public class ArmController : MonoBehaviour
     private bool canMove = true;
 
 
-    void Update() { }
-
     void OnEnable()
     {
-        //GameController.onBreak += setCanMove;
-        //HandController.collision += collide;
         ToyController.handCollision += Collide;
         GameController.move += Move;
     }
 
     void OnDisable()
     {
-        //GameController.onBreak += setCanMove;
-        //HandController.collision += collide;
         ToyController.handCollision += Collide;
         GameController.move += Move;
     }
@@ -51,12 +46,24 @@ public class ArmController : MonoBehaviour
         this.canMove = true;
     }
 
+/*
     private void Awake()
     {
         lineRenderer = GetComponent<LineRenderer>();
-        points = new Vector3[lineRenderer.positionCount];
+        points = new Vector3[1];
         lineRenderer.GetPositions(points);
     }
+
+
+    void SetTargetPosition(Vector3 targetPosition)
+    {
+        points[0] = targetPosition;
+        lineRenderer.SetPositions(points);
+        hand.transform.position = targetPosition;
+        Debug.Log("targetPosition: " + targetPosition);
+    }
+
+    */
 
     void Start()
     {
@@ -69,6 +76,11 @@ public class ArmController : MonoBehaviour
         {
             yield return new WaitForSeconds(1f);
             print("can move: " + canMove);
+            if (points == null)
+            {
+                points = new List<Vector3>();
+                points.Add(transform.position);
+            }
             Spawn();
         }
     }
@@ -77,11 +89,11 @@ public class ArmController : MonoBehaviour
     void Spawn()
     {
         if (!canMove) { return; } // if canMove is false, then we hit something and we should not spawn a new arm
-        Vector3[] newPoints = new Vector3[points.Length + 1];
-        lineRenderer.GetPositions(newPoints);
-        Vector3 lastPoint = newPoints[newPoints.Length - 2];
+        //Vector3[] newPoints = new Vector3[points.Length + 1];
+        //lineRenderer.GetPositions(newPoints);
+        Vector3 lastPoint = points.Last();
 
-        Vector3 nextPoint = getNextPoint(newPoints[points.Length - 1]);
+        Vector3 nextPoint = getNextPoint(lastPoint);
         if (nextPoint == new Vector3(100, 100, 100)) { return; } // if we can't find a new point, then we should not spawn a new arm
 
         if (nextPoint == new Vector3()) // Hit an object
@@ -95,26 +107,18 @@ public class ArmController : MonoBehaviour
             */
             return;
         }
+        points.Add(nextPoint);
 
-
-        newPoints[points.Length] = nextPoint;
-
-        StartCoroutine(moveArm(newPoints, lastPoint, nextPoint));
+        StartCoroutine(moveArm(lastPoint, nextPoint));
 
     }
 
-    IEnumerator moveArm(Vector3[] newPoints, Vector3 lastPoint, Vector3 nextPoint)
+    IEnumerator moveArm(Vector3 lastPoint, Vector3 nextPoint)
     {
         float direction = Mathf.Atan2(nextPoint.y - lastPoint.y, nextPoint.x - lastPoint.x) * Mathf.Rad2Deg;
         float time = 1f;
         float t = 0;
 
-        lineRenderer.positionCount = newPoints.Length;
-        this.points = newPoints;
-        for (int i = 0; i < points.Length - 1; i++)
-        {
-            lineRenderer.SetPosition(i, points[i]);
-        }
 
         while (t < 1)
         {
@@ -127,13 +131,8 @@ public class ArmController : MonoBehaviour
             //hand.GetComponent<Rigidbody2D>().AddForce(Vector3.Lerp(lastPoint, nextPoint, t) * 1f);
             hand.transform.rotation = Quaternion.Lerp(hand.transform.rotation, Quaternion.Euler(0, 0, direction), t);
 
-            // move arm
-            lineRenderer.SetPosition(points.Length - 1, Vector3.Lerp(lastPoint, nextPoint, t));
-
             yield return null;
         }
-        lineRenderer.SetPosition(points.Length - 1, points[points.Length - 1]);
-        GenerateMeshCollider();
     }
 
 
@@ -183,99 +182,6 @@ public class ArmController : MonoBehaviour
         return oldPoint;
     }
 
-    /* kok: https://github.com/llamacademy/line-renderer-collider/blob/main/Assets/Scripts/LineRendererSmoother.cs */
-    public void GenerateMeshCollider()
-    {
-
-        Mesh mesh = new Mesh();
-        lineRenderer.BakeMesh(mesh);
-
-        // Get triangles and vertices from mesh
-        int[] triangles = mesh.triangles;
-        Vector3[] vertices = mesh.vertices;
-
-        // Get just the outer edges from the mesh's triangles (ignore or remove any shared edges)
-        Dictionary<string, KeyValuePair<int, int>> edges = new Dictionary<string, KeyValuePair<int, int>>();
-        for (int i = 0; i < triangles.Length; i += 3)
-        {
-            for (int e = 0; e < 3; e++)
-            {
-                int vert1 = triangles[i + e];
-                int vert2 = triangles[i + e + 1 > i + 2 ? i : i + e + 1];
-                string edge = Mathf.Min(vert1, vert2) + ":" + Mathf.Max(vert1, vert2);
-                if (edges.ContainsKey(edge))
-                {
-                    edges.Remove(edge);
-                }
-                else
-                {
-                    edges.Add(edge, new KeyValuePair<int, int>(vert1, vert2));
-                }
-            }
-        }
-
-        // Create edge lookup (Key is first vertex, Value is second vertex, of each edge)
-        Dictionary<int, int> lookup = new Dictionary<int, int>();
-        foreach (KeyValuePair<int, int> edge in edges.Values)
-        {
-            if (lookup.ContainsKey(edge.Key) == false)
-            {
-                lookup.Add(edge.Key, edge.Value);
-            }
-        }
-
-        Destroy(gameObject.GetComponent<PolygonCollider2D>());
-
-        // Create empty polygon collider
-        PolygonCollider2D polygonCollider = gameObject.AddComponent<PolygonCollider2D>();
-        polygonCollider.pathCount = 0;
-
-        // Loop through edge vertices in order
-        int startVert = 0;
-        int nextVert = startVert;
-        int highestVert = startVert;
-        List<Vector2> colliderPath = new List<Vector2>();
-        while (true)
-        {
-
-            // Add vertex to collider path
-            colliderPath.Add(vertices[nextVert]);
-
-            // Get next vertex
-            nextVert = lookup[nextVert];
-
-            // Store highest vertex (to know what shape to move to next)
-            if (nextVert > highestVert)
-            {
-                highestVert = nextVert;
-            }
-
-            // Shape complete
-            if (nextVert == startVert)
-            {
-
-                // Add path to polygon collider
-                polygonCollider.pathCount++;
-                polygonCollider.SetPath(polygonCollider.pathCount - 1, colliderPath.ToArray());
-                colliderPath.Clear();
-
-                // Go to next shape if one exists
-                if (lookup.ContainsKey(highestVert + 1))
-                {
-
-                    // Set starting and next vertices
-                    startVert = highestVert + 1;
-                    nextVert = startVert;
-
-                    // Continue to next loop
-                    continue;
-                }
-
-                // No more verts
-                break;
-            }
-        }
-    }
 
     private Collider2D[] colliders;
 
@@ -302,17 +208,6 @@ public class ArmController : MonoBehaviour
             {
                 Debug.Log("PolygonCollider2D");
             }
-            return false;
-        }
-        return true;
-    }
-
-    private RaycastHit2D[] hits;
-    private bool canSpawn3(Vector3 pos)
-    {
-        hits = Physics2D.RaycastAll(pos, Vector2.zero, 10f);
-        if (hits.Length > 0)
-        {
             return false;
         }
         return true;
