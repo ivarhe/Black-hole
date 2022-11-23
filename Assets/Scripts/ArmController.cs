@@ -18,8 +18,9 @@ public class ArmController : MonoBehaviour
     //https://www.youtube.com/watch?v=2BH1yQXCpeU
     //https://github.com/llamacademy/line-renderer-collider/tree/main/Assets/Scripts
 
-    public delegate void PushObject(GameObject toy);
-    public static event PushObject Push;
+    public delegate void PushObject(GameObject hand);
+    public static event PushObject StartPush;
+    public static event PushObject StopPush;
 
     private bool canMove = true;
 
@@ -42,7 +43,14 @@ public class ArmController : MonoBehaviour
     {
         this.canMove = false;
         //animator.SetTrigger("Slap");
-        Push(hand);
+        StartPush(hand);
+        StartCoroutine(Push(hand));
+    }
+
+    IEnumerator Push(GameObject hand)
+    {
+        yield return new WaitForSeconds(5f);
+        StopPush(hand);
     }
 
     void Move()
