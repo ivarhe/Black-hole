@@ -7,9 +7,12 @@ public class GetStarted : MonoBehaviour
 {
     private Score scoreStarter; 
     private heartSystem life;
+    
+    public Animator animator;
 
     public void PlayGame() {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        animator.SetTrigger("FadeOut");
 
         scoreStarter = FindObjectOfType<Score>();
         scoreStarter.scoreCount = 0;
@@ -25,6 +28,9 @@ public class GetStarted : MonoBehaviour
     }
 
     public void StartOver() {
+        animator.SetTrigger("FadeOut");
+        Debug.Log("Start over!");
+        //animator.SetTrigger("FadeIn");
         SceneManager.LoadScene(0);
     }
 
