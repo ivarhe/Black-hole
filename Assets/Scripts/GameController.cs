@@ -146,25 +146,31 @@ public class GameController : MonoBehaviour
 
     void OnEnable()
     {
-        ArmController.Push += Push;
+        ArmController.StartPush += StartPush;
+        ArmController.StopPush += StopPush;
     }
 
 
     void OnDisable()
     {
-        ArmController.Push -= Push;
+        ArmController.StartPush -= StartPush;
+        ArmController.StopPush -= StopPush;
     }
 
-    void Push(GameObject hand)
+    void StartPush(GameObject hand)
     {
         ActivateSlap(hand);
-        StartCoroutine(WaitToMove(hand));
+        //WaitToMove(hand);
+    }
+
+    void StopPush(GameObject hand)
+    {
+        PushAndMove(hand);
     }
 
     // Maybe remove parameter here!
-    IEnumerator WaitToMove(GameObject hand)
+    void PushAndMove(GameObject hand)
     {
-        yield return new WaitForSeconds(5);
 
         GameObject closest = getClosestToy(hand);
 
@@ -195,6 +201,56 @@ public class GameController : MonoBehaviour
         }
         return closest;
     }
+
+    // spawn a new hand every minute
+    void SpawnHand()
+    {
+        Vector3 startPos = findHandPos();
+        GameObject tmp = Instantiate(handPrefab, startPos, Quaternion.identity);
+        hands.Add(new HandObject(tmp, "RIGHT"));
+
+        // rotate tmp object based on the start position
+        if (startPos.x < 0)
+        {
+            tmp.transform.Rotate(0, 0, 180);
+        }
+        if (startPos.y < 0)
+        {
+            tmp.transform.Rotate(0, 0, 60);
+        }
+        if (startPos.y > 0)
+        {
+            tmp.transform.Rotate(0, 0, -60);
+        }
+
+    }
+
+    // find a starting position for the hand from the list of starting positions and check if it is free
+    Vector3 findHandPos()
+    {
+        int index = Random.Range(0, 14);
+        Vector3 pos = startPos[index];
+        bool freeSpawnLocation = false;
+        for (int i = 0; i < 14; i++)
+        {
+            if (startPos[i] != new Vector3(0, 0, 0))
+            {
+                freeSpawnLocation = true;
+                continue;
+            }
+        }
+        if (!freeSpawnLocation)
+        {
+            return new Vector3(0, 0, 0);
+        } 
+        while (pos == new Vector3(0, 0, 0))
+        {
+            index = Random.Range(0, 14);
+            pos = startPos[index];
+        }
+        startPos[index] = new Vector3(0, 0, 0);
+        return pos;
+    } 
 
 
     // Start is called before the first frame update
@@ -227,23 +283,22 @@ public class GameController : MonoBehaviour
 
         GameObject tmp = Instantiate(handPrefab, startPos[5], Quaternion.identity);
         hands.Add(new HandObject(tmp, "RIGHT"));
-        tmp.SendMessage("SetHand", "RIGHT");
+        //tmp.SendMessage("SetHand", "RIGHT");
+        startPos[5] = new Vector3(0, 0, 0);
 
         GameObject tmp2 = Instantiate(handPrefab, startPos[0], Quaternion.identity);
+        tmp2.transform.Rotate(0, 0, 180);
         hands.Add(new HandObject(tmp2, "LEFT"));
-        tmp2.SendMessage("SetHand", "LEFT");
+        //tmp2.SendMessage("SetHand", "LEFT");
+        startPos[0] = new Vector3(0, 0, 0);
 
-        GameObject tmp3 = Instantiate(handPrefab, startPos[1], Quaternion.identity);
-        hands.Add(new HandObject(tmp3, "PLAYER"));
-        tmp3.SendMessage("SetHand", "PLAYER");
 
         foreach (HandObject hand in hands)
         {
             animatorList.Add(hand.hand.GetComponent<Animator>()); //fill up your list with animators components from valve gameobjects
         }
 
-        //arm.GetComponent<ArmController>().hand = hand;
-        //arm.SendMessage("SetTargetPosition", startPos[5]);
+        InvokeRepeating("SpawnHand", 0, 30);
 
     }
 
