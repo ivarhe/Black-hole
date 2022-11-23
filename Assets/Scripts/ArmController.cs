@@ -8,10 +8,10 @@ public class ArmController : MonoBehaviour
 
     //public LineRenderer lineRenderer;
     public LayerMask ToyObjects;
-    private List<Vector3> points;
+
     //private GameObject Arm;
     public GameObject hand;
-    float MOVE_VALUE = 2f;
+    float MOVE_VALUE = 0.005f;
     private int lastdirection = 1;
 
     /* Nyttige linker */
@@ -45,29 +45,30 @@ public class ArmController : MonoBehaviour
         Push(hand);
     }
 
-    void Move() { 
+    void Move()
+    {
         //animator.ResetTrigger("Slap");
         this.canMove = true;
     }
 
-/*
-    private void Awake()
-    {
-        lineRenderer = GetComponent<LineRenderer>();
-        points = new Vector3[1];
-        lineRenderer.GetPositions(points);
-    }
+    /*
+        private void Awake()
+        {
+            lineRenderer = GetComponent<LineRenderer>();
+            points = new Vector3[1];
+            lineRenderer.GetPositions(points);
+        }
 
 
-    void SetTargetPosition(Vector3 targetPosition)
-    {
-        points[0] = targetPosition;
-        lineRenderer.SetPositions(points);
-        hand.transform.position = targetPosition;
-        Debug.Log("targetPosition: " + targetPosition);
-    }
+        void SetTargetPosition(Vector3 targetPosition)
+        {
+            points[0] = targetPosition;
+            lineRenderer.SetPositions(points);
+            hand.transform.position = targetPosition;
+            Debug.Log("targetPosition: " + targetPosition);
+        }
 
-    */
+        */
 
     void Start()
     {
@@ -79,13 +80,8 @@ public class ArmController : MonoBehaviour
     {
         while (true)
         {
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(0.1f);
             print("can move: " + canMove);
-            if (points == null)
-            {
-                points = new List<Vector3>();
-                points.Add(transform.position);
-            }
             Spawn();
         }
     }
@@ -93,59 +89,48 @@ public class ArmController : MonoBehaviour
 
     void Spawn()
     {
+        
         if (!canMove) { return; } // if canMove is false, then we hit something and we should not spawn a new arm
-        //Vector3[] newPoints = new Vector3[points.Length + 1];
-        //lineRenderer.GetPositions(newPoints);
-        Vector3 lastPoint = points.Last();
-
-        Vector3 nextPoint = getNextPoint(lastPoint);
-        if (nextPoint == new Vector3(100, 100, 100)) { return; } // if we can't find a new point, then we should not spawn a new arm
-
-        if (nextPoint == new Vector3()) // Hit an object
-        {
-            /*
-            if (onHit != null)
-            {
-                canMove = false;
-                StartCoroutine(Hit());
-            }
-            */
-            return;
-        }
-        points.Add(nextPoint);
-
-        StartCoroutine(moveArm(lastPoint, nextPoint));
-
+        StartCoroutine(moveArm());
     }
 
-    IEnumerator moveArm(Vector3 lastPoint, Vector3 nextPoint)
+    IEnumerator moveArm()//Vector3 lastPoint, Vector3 nextPoint)
     {
-        float direction = Mathf.Atan2(nextPoint.y - lastPoint.y, nextPoint.x - lastPoint.x) * Mathf.Rad2Deg;
-        float time = 1f;
-        float t = 0;
+        // new random rotation based on current rotation
 
+        // get gurrent local rotation
+        Vector3 currentRotation = transform.localEulerAngles;
+        // get random rotation based on current rotation
+        Vector3 randomRotation = new Vector3(currentRotation.x, currentRotation.y, currentRotation.z + Random.Range(-90, 90));
+        // get randomRotation as quaternion
+        Quaternion randomRotationQuaternion = Quaternion.Euler(randomRotation);
 
-        while (t < 1)
+        // Lerp the rotation from the current rotation to the new rotation
+        float t = 0f;
+        while (t < 1f)
         {
-            //if (!canMove) { break; }
-            while (!canMove) { yield return null; }
-            t += Time.deltaTime / time;
+            if (!canMove) { yield return null; }
+            t += Time.deltaTime / 1f;
 
-            // move hand
-            hand.transform.position = Vector3.Lerp(lastPoint, nextPoint, t);
-            //hand.GetComponent<Rigidbody2D>().AddForce(Vector3.Lerp(lastPoint, nextPoint, t) * 1f);
-            hand.transform.rotation = Quaternion.Lerp(hand.transform.rotation, Quaternion.Euler(0, 0, direction), t);
+            transform.rotation = Quaternion.Lerp(transform.rotation, randomRotationQuaternion, t);
+            // move forward using lerping
+            transform.position = Vector3.Lerp(transform.position, transform.position + transform.right * MOVE_VALUE, t); 
+            //transform.position += transform.forward * Time.deltaTime * MOVE_VALUE;
 
             yield return null;
         }
+
+
     }
+
     private int[] directions;
 
     void SetHand(string focus)
     {
         if (focus == "LEFT")
         {
-            directions = new int[] { 0, 2, 3, 3 };
+            //transform.rotation = Quaternion.Euler(0, 0, -180);
+            Debug.Log("LEFT");
         }
         else if (focus == "RIGHT")
         {
@@ -168,10 +153,13 @@ public class ArmController : MonoBehaviour
     private Vector3 getNextPoint(Vector3 oldPoint)
     {
 
+
         Vector3 spawnUp = new Vector3(oldPoint.x, oldPoint.y + MOVE_VALUE, 0);
         Vector3 spawnRight = new Vector3(oldPoint.x + MOVE_VALUE, oldPoint.y, 0);
         Vector3 spawnDown = new Vector3(oldPoint.x, oldPoint.y - MOVE_VALUE, 0);
         Vector3 spawnLeft = new Vector3(oldPoint.x - MOVE_VALUE, oldPoint.y, 0);
+
+
 
         // get player position
         Vector3 playerPos = GameObject.Find("Player").transform.position;

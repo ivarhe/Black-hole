@@ -230,6 +230,7 @@ public class GameController : MonoBehaviour
         tmp.SendMessage("SetHand", "RIGHT");
 
         GameObject tmp2 = Instantiate(handPrefab, startPos[0], Quaternion.identity);
+        tmp2.transform.Rotate(0, 0, 180);
         hands.Add(new HandObject(tmp2, "LEFT"));
         tmp2.SendMessage("SetHand", "LEFT");
 
