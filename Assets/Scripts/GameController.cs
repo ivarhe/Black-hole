@@ -300,7 +300,7 @@ public class GameController : MonoBehaviour
             animatorList.Add(hand.hand.GetComponent<Animator>()); //fill up your list with animators components from valve gameobjects
         }
 
-        InvokeRepeating("SpawnHand", 0, 30);
+        InvokeRepeating("SpawnHand", 0, 60);
 
     }
 
