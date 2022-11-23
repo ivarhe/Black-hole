@@ -41,10 +41,13 @@ public class ArmController : MonoBehaviour
 
     void Collide(GameObject hand)
     {
-        this.canMove = false;
-        //animator.SetTrigger("Slap");
-        StartPush(hand);
-        StartCoroutine(Push(hand));
+        if (hand == this.hand)
+        {
+            this.canMove = false;
+            //animator.SetTrigger("Slap");
+            StartPush(hand);
+            StartCoroutine(Push(hand));
+        }
     }
 
     IEnumerator Push(GameObject hand)
@@ -97,7 +100,6 @@ public class ArmController : MonoBehaviour
 
     void Spawn()
     {
-        
         if (!canMove) { return; } // if canMove is false, then we hit something and we should not spawn a new arm
         StartCoroutine(moveArm());
     }
@@ -122,7 +124,7 @@ public class ArmController : MonoBehaviour
 
             transform.rotation = Quaternion.Lerp(transform.rotation, randomRotationQuaternion, t);
             // move forward using lerping
-            transform.position = Vector3.Lerp(transform.position, transform.position + transform.right * MOVE_VALUE, t); 
+            transform.position = Vector3.Lerp(transform.position, transform.position + transform.right * MOVE_VALUE, t);
             //transform.position += transform.forward * Time.deltaTime * MOVE_VALUE;
 
             yield return null;

@@ -13,8 +13,8 @@ public class TrailCollider : MonoBehaviour
     void Awake()
     {
         trail = GetComponent<TrailRenderer>();
-        GameObject colliderObject = new GameObject("TrailCollider", typeof(EdgeCollider2D));
         edgeCollider = GetValidCollider();
+        StartCoroutine(SetColliderPointsFromTrail(trail, edgeCollider));
     }
 
     EdgeCollider2D GetValidCollider()
@@ -38,27 +38,37 @@ public class TrailCollider : MonoBehaviour
 
     void setColliderPointsFromTrail(TrailRenderer trail, EdgeCollider2D edgeCollider)
     {
-        List<Vector2> points = new List<Vector2>();
-        for (int position = 0; position < trail.positionCount; position++)
+        Vector3[] trailPositions = new Vector3[trail.positionCount];
+        trail.GetPositions(trailPositions);
+        Vector2[] colliderPoints = new Vector2[trailPositions.Length];
+        for (int i = 0; i < trailPositions.Length; i++)
         {
-            points.Add(trail.GetPosition(position));
+            colliderPoints[i] = trailPositions[i];
         }
-        edgeCollider.SetPoints(points);
-        
+        edgeCollider.points = colliderPoints;
+
     }
 
-    void Update()
+    IEnumerator SetColliderPointsFromTrail(TrailRenderer trail, EdgeCollider2D edgeCollider)
     {
-        setColliderPointsFromTrail(trail, edgeCollider);
+        while (true)
+        {
+            yield return new WaitForSeconds(1f); // to avoid setting the points too often aka lag
+            setColliderPointsFromTrail(trail, edgeCollider);
+        }
+
     }
 
-    void OnDestroy()
-    {
-        if (edgeCollider != null)
+
+    /*
+        void OnDestroy()
         {
-            unusedColliders.Add(edgeCollider);
-            edgeCollider.enabled = false;
+            if (edgeCollider != null)
+            {
+                unusedColliders.Add(edgeCollider);
+                edgeCollider.enabled = false;
+            }
         }
-    }
-   
+    */
+
 }

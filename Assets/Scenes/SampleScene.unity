@@ -453,6 +453,7 @@ MonoBehaviour:
   ballSpriteShine: {fileID: 21300000, guid: 06d5ebbaca6e84c44a1d31b09b2893c3, type: 3}
   carSpriteShine: {fileID: 21300000, guid: e8340cf8037446c4f9f087fef589e101, type: 3}
   boxSpriteShine: {fileID: 21300000, guid: af7884d6337846c40bb1590debc40c0f, type: 3}
+  ShineDistance: 100
   threshold: 5
   maxAmount: 10
   CollidableObjects:
@@ -731,7 +732,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 953164963403260862, guid: be3356472068742f99a6fd3346b25740, type: 3}
       propertyPath: HOLD_OFFSET
-      value: 4
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 953164963403260862, guid: be3356472068742f99a6fd3346b25740, type: 3}
       propertyPath: audioSource

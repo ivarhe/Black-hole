@@ -44,6 +44,8 @@ public class GameController : MonoBehaviour
     public Sprite aBlockSprite, bBlockSprite, ballSprite, carSprite, boxSprite;
     public Sprite aBlockSpriteShine, bBlockSpriteShine, ballSpriteShine, carSpriteShine, boxSpriteShine;
 
+    public int ShineDistance;
+
     private IToyObject[] spawnableObjects = new IToyObject[5];
     private List<IToyObject> spawnedObjects = new List<IToyObject>();
 
@@ -86,7 +88,7 @@ public class GameController : MonoBehaviour
     // TODO: Add the rest of the objects here
     void makeShine(IToyObject obj)
     {
-        if ((player.transform.position - obj.gameObject.transform.position).sqrMagnitude < 3 * 20) // check if the player is close to the object
+        if ((player.transform.position - obj.gameObject.transform.position).sqrMagnitude < 3 * ShineDistance) // check if the player is close to the object
         {
             if (obj.gameObject.CompareTag("a-block"))
             {

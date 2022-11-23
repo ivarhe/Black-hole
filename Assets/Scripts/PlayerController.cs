@@ -9,7 +9,7 @@ public class PlayerController : MonoBehaviour
 
     public float moveSpeed = 30f;
     public float collisionOffset = 0.05f;
-    public float HOLD_OFFSET = 4f;
+    public float HOLD_OFFSET = 10f;
     public ContactFilter2D movementFilter;
     Vector2 movementInput;
     SpriteRenderer spriteRenderer;
@@ -71,7 +71,7 @@ public class PlayerController : MonoBehaviour
             Vector2 pos = GameObject.Find("Player").transform.position;
             if (!currentlyGrabbedObject)
             {
-                Collider2D hit = Physics2D.OverlapCircle(pos, 6f, ToyObjects);
+                Collider2D hit = Physics2D.OverlapCircle(pos, 8f, ToyObjects);
                 if (hit)
                 {
                     if (hit.GetType() == typeof(PolygonCollider2D)) { return; }
