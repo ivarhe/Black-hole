@@ -30,7 +30,8 @@ public class PlayerController : MonoBehaviour
     public delegate void PlayerDamageEvent();
     public static event PlayerDamageEvent onPlayerDamage;
 
-
+    public AudioSource audioSource;
+    public AudioClip[] audioClips;
 
 
     // Start is called before the first frame update
@@ -39,6 +40,7 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     void OnEnable()
@@ -107,6 +109,7 @@ public class PlayerController : MonoBehaviour
         Debug.Log("collide with player " + col.gameObject.name);
         if (col.gameObject.tag == "hand" || col.gameObject.tag == "trail")
         {
+            audioSource.PlayOneShot(audioClips[0], 0.7F);
             isBouncing = true;
             Invoke("StopBounce", 0.3f);
             onPlayerDamage();
@@ -147,6 +150,7 @@ public class PlayerController : MonoBehaviour
                 // find a safe spot to move to
                 Vector3 pos = transform.position;
                 Vector3 newPos = pos - (Vector3)movementInput * moveSpeed * Time.fixedDeltaTime;
+                /*
                 for (int i = 0; i < 10; i++)
                 {
                     //newPos = pos - (Vector3)movementInput * i;
@@ -156,6 +160,7 @@ public class PlayerController : MonoBehaviour
                         break;
                     }
                 }
+                */
                 rb.MovePosition(newPos);
 
             }

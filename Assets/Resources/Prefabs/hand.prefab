@@ -178,7 +178,7 @@ TrailRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Time: 100
+  m_Time: 1000000
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 1
@@ -259,7 +259,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05127cf5e7047461299d9ae2cbe980ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lineRenderer: {fileID: 0}
   ToyObjects:
     serializedVersion: 2
     m_Bits: 2048
