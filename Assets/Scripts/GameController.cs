@@ -155,9 +155,9 @@ public class GameController : MonoBehaviour
         ArmController.Push -= Push;
     }
 
-    void Push(GameObject toy)
+    void Push(GameObject hand)
     {
-        StartCoroutine(WaitToMove(toy));
+        StartCoroutine(WaitToMove(hand));
     }
 
     // Maybe remove parameter here!
@@ -193,9 +193,10 @@ public class GameController : MonoBehaviour
         }
         return closest;
     }
-  
+
 
     // Start is called before the first frame update
+    List<Animator> animatorList = new List<Animator>();
     void Start()
     {
         spawnableObjects[0] = new ToyObject(aBlockPrefab, 5);
@@ -233,6 +234,13 @@ public class GameController : MonoBehaviour
         GameObject tmp3 = Instantiate(handPrefab, startPos[1], Quaternion.identity);
         hands.Add(new HandObject(tmp3, "PLAYER"));
         tmp3.SendMessage("SetHand", "PLAYER");
+
+        foreach(HandObject hand in hands) //NOTE: do "valvesList.Length - 1" instead, if you get index out of range error
+        {
+            handhand.GetComponent<Animator>()
+            animatorList.Add(); //fill up your list with animators components from valve gameobjects
+            animatorList. //turn off each animator component at the start
+        }
 
         //arm.GetComponent<ArmController>().hand = hand;
         //arm.SendMessage("SetTargetPosition", startPos[5]);
