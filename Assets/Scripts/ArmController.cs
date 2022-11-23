@@ -23,6 +23,8 @@ public class ArmController : MonoBehaviour
 
     private bool canMove = true;
 
+    Animator animator;
+
 
     void OnEnable()
     {
@@ -36,13 +38,15 @@ public class ArmController : MonoBehaviour
         GameController.move += Move;
     }
 
-    void Collide(GameObject toy)
+    void Collide(GameObject hand)
     {
         this.canMove = false;
-        Push(toy);
+        //animator.SetTrigger("Slap");
+        Push(hand);
     }
 
     void Move() { 
+        //animator.ResetTrigger("Slap");
         this.canMove = true;
     }
 
@@ -68,6 +72,7 @@ public class ArmController : MonoBehaviour
     void Start()
     {
         StartCoroutine(startSpawn());
+        animator = GetComponent<Animator>();
     }
 
     IEnumerator startSpawn()

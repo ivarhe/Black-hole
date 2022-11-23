@@ -155,9 +155,10 @@ public class GameController : MonoBehaviour
         ArmController.Push -= Push;
     }
 
-    void Push(GameObject toy)
+    void Push(GameObject hand)
     {
-        StartCoroutine(WaitToMove(toy));
+        ActivateSlap(hand);
+        StartCoroutine(WaitToMove(hand));
     }
 
     // Maybe remove parameter here!
@@ -172,6 +173,7 @@ public class GameController : MonoBehaviour
             closest.GetComponent<Rigidbody2D>().AddForce((closest.transform.position - hand.transform.position) * 5, ForceMode2D.Impulse);
             closest.GetComponent<Rigidbody2D>().drag = 1f;
             move();
+            DeactivateSlap(hand);
         }
     }
 
@@ -196,6 +198,7 @@ public class GameController : MonoBehaviour
 
 
     // Start is called before the first frame update
+    List<Animator> animatorList = new List<Animator>();
     void Start()
     {
         spawnableObjects[0] = new ToyObject(aBlockPrefab, 5);
@@ -234,13 +237,37 @@ public class GameController : MonoBehaviour
         hands.Add(new HandObject(tmp3, "PLAYER"));
         tmp3.SendMessage("SetHand", "PLAYER");
 
-        // loop through all hands and set their target
+        foreach (HandObject hand in hands)
+        {
+            animatorList.Add(hand.hand.GetComponent<Animator>()); //fill up your list with animators components from valve gameobjects
+        }
 
         //arm.GetComponent<ArmController>().hand = hand;
         //arm.SendMessage("SetTargetPosition", startPos[5]);
 
     }
 
+    void ActivateSlap(GameObject hand)
+    {
+        foreach (Animator animator in animatorList)
+        {
+            if (animator.gameObject == hand)
+            {
+                animator.Play("hand_slap");
+            }
+        }
+    }
+
+    void DeactivateSlap(GameObject hand)
+    {
+        foreach (Animator animator in animatorList)
+        {
+            if (animator.gameObject == hand)
+            {
+                animator.Play("hand_idle");
+            }
+        }
+    }
 
     private void SpawnObj()
     {
