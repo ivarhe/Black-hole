@@ -157,6 +157,7 @@ public class GameController : MonoBehaviour
 
     void Push(GameObject hand)
     {
+        ActivateSlap(hand);
         StartCoroutine(WaitToMove(hand));
     }
 
@@ -172,6 +173,7 @@ public class GameController : MonoBehaviour
             closest.GetComponent<Rigidbody2D>().AddForce((closest.transform.position - hand.transform.position) * 5, ForceMode2D.Impulse);
             closest.GetComponent<Rigidbody2D>().drag = 1f;
             move();
+            DeactivateSlap(hand);
         }
     }
 
@@ -235,11 +237,9 @@ public class GameController : MonoBehaviour
         hands.Add(new HandObject(tmp3, "PLAYER"));
         tmp3.SendMessage("SetHand", "PLAYER");
 
-        foreach(HandObject hand in hands) //NOTE: do "valvesList.Length - 1" instead, if you get index out of range error
+        foreach (HandObject hand in hands)
         {
-            handhand.GetComponent<Animator>()
-            animatorList.Add(); //fill up your list with animators components from valve gameobjects
-            animatorList. //turn off each animator component at the start
+            animatorList.Add(hand.hand.GetComponent<Animator>()); //fill up your list with animators components from valve gameobjects
         }
 
         //arm.GetComponent<ArmController>().hand = hand;
@@ -247,6 +247,27 @@ public class GameController : MonoBehaviour
 
     }
 
+    void ActivateSlap(GameObject hand)
+    {
+        foreach (Animator animator in animatorList)
+        {
+            if (animator.gameObject == hand)
+            {
+                animator.Play("hand_slap");
+            }
+        }
+    }
+
+    void DeactivateSlap(GameObject hand)
+    {
+        foreach (Animator animator in animatorList)
+        {
+            if (animator.gameObject == hand)
+            {
+                animator.Play("hand_idle");
+            }
+        }
+    }
 
     private void SpawnObj()
     {

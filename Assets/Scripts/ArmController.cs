@@ -41,12 +41,12 @@ public class ArmController : MonoBehaviour
     void Collide(GameObject hand)
     {
         this.canMove = false;
-        animator.SetTrigger("Slap");
+        //animator.SetTrigger("Slap");
         Push(hand);
     }
 
     void Move() { 
-        animator.ResetTrigger("Slap");
+        //animator.ResetTrigger("Slap");
         this.canMove = true;
     }
 
