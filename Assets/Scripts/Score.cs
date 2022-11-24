@@ -27,9 +27,18 @@ public class Score : MonoBehaviour
         highScoreCount = PlayerPrefs.GetFloat("HighScore");
         scoreCount = PlayerPrefs.GetFloat("Score");
         dead = PlayerPrefs.GetInt("Dead") == 1;
-        finalScoreText.text = "Final Score: " + PlayerPrefs.GetFloat("FinalScore");
-        highScoreText.text = "High Score: " + PlayerPrefs.GetFloat("HighScore");
-        gameOverText.text = PlayerPrefs.GetString("GameOverText");
+        if (finalScoreText != null)
+        {
+            finalScoreText.text = "Final Score: " + PlayerPrefs.GetFloat("FinalScore");
+        }
+        if (highScoreText != null)
+        {
+            highScoreText.text = "High Score: " + PlayerPrefs.GetFloat("HighScore");
+        }
+        if (gameOverText != null)
+        {
+            gameOverText.text = PlayerPrefs.GetString("GameOverText");
+        }
         //scoreText.text = "Your Score: " + Mathf.Round(scoreCount);
         if (dead)
         {
@@ -49,7 +58,9 @@ public class Score : MonoBehaviour
             PlayerPrefs.SetFloat("FinalScore", Mathf.Round(scoreCount));
         }
 
-        scoreText.text = "Your Score: " + Mathf.Round(scoreCount);
+        if(scoreText != null) {
+            scoreText.text = "Your Score: " + Mathf.Round(scoreCount);
+        }
 
         if (scoreCount > highScoreCount)
         {
@@ -57,7 +68,10 @@ public class Score : MonoBehaviour
             PlayerPrefs.SetFloat("HighScore", Mathf.Round(highScoreCount));
             PlayerPrefs.SetString("GameOverText", "New HighScore! You have managed to keep the monster away for the longest amount of time! But not enough, it seems...");
         }
-        highScoreText.text = "HighScore: " + Mathf.Round(highScoreCount);
+        if (highScoreText != null)
+        {
+            highScoreText.text = "High Score: " + Mathf.Round(highScoreCount);
+        }
     }
 
 }

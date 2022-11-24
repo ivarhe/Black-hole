@@ -5,10 +5,11 @@ using UnityEngine.SceneManagement;
 
 public class GetStarted : MonoBehaviour
 {
-    private Score scoreStarter; 
+    private Score scoreStarter;
     private heartSystem life;
 
-    public void PlayGame() {
+    public void PlayGame()
+    {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
 
         scoreStarter = FindObjectOfType<Score>();
@@ -18,13 +19,19 @@ public class GetStarted : MonoBehaviour
 
     }
 
-    public void Update() {
-        if(life.dead == true){
-            scoreStarter.ScoreIncreasing = false;
+    public void Update()
+    {
+        if (life != null)
+        {
+            if (life.dead == true)
+            {
+                scoreStarter.ScoreIncreasing = false;
+            }
         }
     }
 
-    public void StartOver() {
+    public void StartOver()
+    {
         SceneManager.LoadScene(0);
     }
 
