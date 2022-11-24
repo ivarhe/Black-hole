@@ -210,6 +210,7 @@ public class GameController : MonoBehaviour
         Vector3 startPos = findHandPos();
         GameObject tmp = Instantiate(handPrefab, startPos, Quaternion.identity);
         hands.Add(new HandObject(tmp, "RIGHT"));
+        animatorList.Add(tmp.GetComponent<Animator>());
 
         // rotate tmp object based on the start position
         if (startPos.x < 0)

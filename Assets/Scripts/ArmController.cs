@@ -50,28 +50,6 @@ public class ArmController : MonoBehaviour
         }
     }
 
-/* // not working yet
-    bool hitWall = false;
-
-    void OnCollisionEnter2D(Collision2D col)
-    {
-        if (col.gameObject.tag == "wall")
-        {
-            canMove = false;
-            // rotate the hand 180 degrees when it collides with a wall
-            //transform.Rotate(0f, 180f, 0f);
-            hitWall = true;
-            StartCoroutine(Turn());
-        }
-    }
-
-    IEnumerator Turn()
-    {
-        //transform.Rotate(0f, 180f, 0f);
-        yield return new WaitForSeconds(0.5f);
-        canMove = true;
-    }
-    */
 
     IEnumerator Push(GameObject hand)
     {
@@ -85,24 +63,6 @@ public class ArmController : MonoBehaviour
         this.canMove = true;
     }
 
-    /*
-        private void Awake()
-        {
-            lineRenderer = GetComponent<LineRenderer>();
-            points = new Vector3[1];
-            lineRenderer.GetPositions(points);
-        }
-
-
-        void SetTargetPosition(Vector3 targetPosition)
-        {
-            points[0] = targetPosition;
-            lineRenderer.SetPositions(points);
-            hand.transform.position = targetPosition;
-            Debug.Log("targetPosition: " + targetPosition);
-        }
-
-        */
 
     void Start()
     {
@@ -147,15 +107,6 @@ public class ArmController : MonoBehaviour
 
         // get gurrent local rotation
         Vector3 currentRotation = transform.localEulerAngles;
-        
-        /*
-        if (hitWall)
-        {
-            // rotate the arm 180 degrees
-            currentRotation = new Vector3(currentRotation.x, currentRotation.y, currentRotation.z + 180);
-            hitWall = false;
-        }
-        */ // not working as intended
 
         //Quaternion rotation = Quaternion.Euler(new Vector3(currentRotation.x, currentRotation.y, currentRotation.z));
 
@@ -184,6 +135,11 @@ public class ArmController : MonoBehaviour
             }
             else
             {
+                if (transform.position.x > 160 || transform.position.x < -160 || transform.position.y > 90 || transform.position.y < -90)
+                {
+                    // if the arm is outside the bounds of the screen, then we should rotate it 180 degrees
+                    randomRotationQuaternion = Quaternion.Euler(new Vector3(currentRotation.x, currentRotation.y, currentRotation.z + 180));
+                }
 
                 transform.rotation = Quaternion.Lerp(transform.rotation, randomRotationQuaternion, t);
                 // move forward using lerping
@@ -194,8 +150,9 @@ public class ArmController : MonoBehaviour
             }
         }
 
-
     }
+
+    /*
 
     private int[] directions;
 
@@ -251,32 +208,32 @@ public class ArmController : MonoBehaviour
         switch (direction)
         {
             case 0:
-                /*
+                
                 if (!canSpawn(spawnUp)) { break; }
-                */
+                
                 if (lastdirection == 2) { return oldPoint; }
 
                 lastdirection = direction;
                 return spawnUp;
 
             case 1:
-                /*
+                
                 if (!canSpawn(spawnRight)) { break; }
-                */
+                
                 lastdirection = direction;
                 return spawnRight;
             case 2:
-                /*
+                
                 if (!canSpawn(spawnDown)) { break; }
-                */
+                
                 if (lastdirection == 0) { return oldPoint; }
 
                 lastdirection = direction;
                 return spawnDown;
             case 3:
-                /*
+                
                 if (!canSpawn(spawnLeft)) { break; }
-                */
+                
                 lastdirection = direction;
                 return spawnLeft;
             case 4:
@@ -315,5 +272,6 @@ public class ArmController : MonoBehaviour
         }
         return true;
     }
+    */
 
 }
