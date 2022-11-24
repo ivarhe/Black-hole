@@ -106,12 +106,30 @@ public class ArmController : MonoBehaviour
 
     IEnumerator moveArm()//Vector3 lastPoint, Vector3 nextPoint)
     {
-        // new random rotation based on current rotation
+        Vector3 playerPos = GameObject.Find("Player").transform.position;
+
+        Vector3 lastPoint = hand.transform.position;
+        Vector3 playerDirection = playerPos - transform.position;
+
+        // get direction to player
+        float angle = Mathf.Atan2(playerDirection.y, playerDirection.x) * Mathf.Rad2Deg;
+
+        // find point 1f away in the direction of the player
+        Vector3 playerPoint = new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad), 0) * 1f + transform.position;
+
+        float direction = Mathf.Atan2(playerPoint.y - lastPoint.y, playerPoint.x - lastPoint.x) * Mathf.Rad2Deg;
+
 
         // get gurrent local rotation
         Vector3 currentRotation = transform.localEulerAngles;
+
+        //Quaternion rotation = Quaternion.Euler(new Vector3(currentRotation.x, currentRotation.y, currentRotation.z));
+
         // get random rotation based on current rotation
         Vector3 randomRotation = new Vector3(currentRotation.x, currentRotation.y, currentRotation.z + Random.Range(-90, 90));
+
+        //transform.rotation = Quaternion.FromToRotation (transform.up, hit.normal) * transform.rotation;
+
         // get randomRotation as quaternion
         Quaternion randomRotationQuaternion = Quaternion.Euler(randomRotation);
 
@@ -122,12 +140,24 @@ public class ArmController : MonoBehaviour
             if (!canMove) { yield return null; }
             t += Time.deltaTime / 1f;
 
-            transform.rotation = Quaternion.Lerp(transform.rotation, randomRotationQuaternion, t);
-            // move forward using lerping
-            transform.position = Vector3.Lerp(transform.position, transform.position + transform.right * MOVE_VALUE, t);
-            //transform.position += transform.forward * Time.deltaTime * MOVE_VALUE;
+            if (Vector3.Distance(playerPos, this.hand.transform.position) < 30f)
+            {
+                // move hand
+                transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(0, 0, direction), t);
+                transform.position = Vector3.Lerp(transform.position, transform.position + transform.right * MOVE_VALUE, t);
+                //hand.GetComponent<Rigidbody2D>().AddForce(Vector3.Lerp(lastPoint, nextPoint, t) * 1f);
+                yield return null;
+            }
+            else
+            {
 
-            yield return null;
+                transform.rotation = Quaternion.Lerp(transform.rotation, randomRotationQuaternion, t);
+                // move forward using lerping
+                transform.position = Vector3.Lerp(transform.position, transform.position + transform.right * MOVE_VALUE, t);
+                //transform.position += transform.forward * Time.deltaTime * MOVE_VALUE;
+
+                yield return null;
+            }
         }
 
 

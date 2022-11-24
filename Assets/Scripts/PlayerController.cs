@@ -114,7 +114,8 @@ public class PlayerController : MonoBehaviour
             Invoke("StopBounce", 0.3f);
             onPlayerDamage();
         }
-        if (col.gameObject.tag == "bed")
+        if (col.gameObject.tag == "bed" || col.gameObject.tag == "wall")
+
         {
             isBouncing = true;
             Invoke("StopBounce", 0.3f);
