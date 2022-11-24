@@ -50,6 +50,29 @@ public class ArmController : MonoBehaviour
         }
     }
 
+/* // not working yet
+    bool hitWall = false;
+
+    void OnCollisionEnter2D(Collision2D col)
+    {
+        if (col.gameObject.tag == "wall")
+        {
+            canMove = false;
+            // rotate the hand 180 degrees when it collides with a wall
+            //transform.Rotate(0f, 180f, 0f);
+            hitWall = true;
+            StartCoroutine(Turn());
+        }
+    }
+
+    IEnumerator Turn()
+    {
+        //transform.Rotate(0f, 180f, 0f);
+        yield return new WaitForSeconds(0.5f);
+        canMove = true;
+    }
+    */
+
     IEnumerator Push(GameObject hand)
     {
         yield return new WaitForSeconds(5f);
@@ -119,9 +142,20 @@ public class ArmController : MonoBehaviour
 
         float direction = Mathf.Atan2(playerPoint.y - lastPoint.y, playerPoint.x - lastPoint.x) * Mathf.Rad2Deg;
 
+        // if hitWall is true, then we should rotate the arm 180 degrees
+
 
         // get gurrent local rotation
         Vector3 currentRotation = transform.localEulerAngles;
+        
+        /*
+        if (hitWall)
+        {
+            // rotate the arm 180 degrees
+            currentRotation = new Vector3(currentRotation.x, currentRotation.y, currentRotation.z + 180);
+            hitWall = false;
+        }
+        */ // not working as intended
 
         //Quaternion rotation = Quaternion.Euler(new Vector3(currentRotation.x, currentRotation.y, currentRotation.z));
 
