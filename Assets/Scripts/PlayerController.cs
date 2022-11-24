@@ -31,6 +31,7 @@ public class PlayerController : MonoBehaviour
     public static event PlayerDamageEvent onPlayerDamage;
 
     public AudioSource audioSource;
+    public AudioSource audioSource2;
     public AudioClip[] audioClips;
 
 
@@ -40,7 +41,6 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
-        audioSource = GetComponent<AudioSource>();
     }
 
     void OnEnable()
@@ -166,10 +166,18 @@ public class PlayerController : MonoBehaviour
 
             }
             animator.SetBool("isMoving", true);
+            // start to play the walking sound from soundclip
+            if (!audioSource2.isPlaying)
+            {
+                // play audioClip[1] until it is done
+                audioSource2.PlayOneShot(audioClips[1], 0.7F);
+            }
         }
         else
         {
             animator.SetBool("isMoving", false);
+            // stop the walking sound
+            audioSource2.Stop();
         }
         // Set direction of sprite to movement direction
         if (movementInput.x < 0)
